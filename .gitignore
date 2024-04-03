@@ -1,0 +1,13 @@
+*
+!.gitattributes
+!.gitignore
+!*.rs
+!LICENSE*
+!Cargo.lock
+!Cargo.toml
+!rustfmt.toml
+!src/
+!dicts/
+!dicts/dict.txt*
+!fonts/
+!fonts/*.otf

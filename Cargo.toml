@@ -1,0 +1,22 @@
+[package]
+name = "chissor"
+version = "0.1.0"
+authors = ["Wing Hei Chan <whmunkchan@outlook.com>"]
+edition = "2021"
+description = "GUI application for Chinese word segmentation"
+license = "MIT"
+
+[profile.release]
+strip = true
+lto = true
+panic = "abort"
+
+[dependencies]
+eframe = { version = "0.27", features = [
+  "accesskit",
+  "wayland",
+  "wgpu",
+  "x11",
+] }
+rfd = "0.14"
+jieba-rs = { version = "0.6", default-features = false }

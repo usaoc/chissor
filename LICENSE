@@ -1,0 +1,12 @@
+This program is free software; you can redistribute it and/or modify
+it under the terms of the Expat License.  This program embeds
+components distributed under other licenses:
+
+- The embedded dictionary files are modified from the original Jieba
+  dictionaries, and thus are licensed under the Expat License with a
+  different copyright notice.  The files can be found in "dicts/".
+
+- The embedded font, Noto Sans CJK, is licensed under the SIL Open
+  Font License.  The files can be found in "fonts/".
+
+The full text of the Expat License can be found in "LICENSE.EXPAT".

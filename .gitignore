@@ -3,6 +3,7 @@
 !.gitignore
 !*.rs
 !LICENSE*
+!README*
 !Cargo.lock
 !Cargo.toml
 !rustfmt.toml

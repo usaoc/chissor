@@ -327,8 +327,12 @@ impl ErrorWindows {
         self.count += 1;
     }
 
-    fn show_all(&mut self, ctx: &egui::Context) {
+    fn cleanup(&mut self) {
         self.windows.retain(|ErrorWindow { open, .. }| *open);
+    }
+
+    fn show_all(&mut self, ctx: &egui::Context) {
+        self.cleanup();
         for win in &mut self.windows {
             win.show(ctx);
         }
@@ -397,5 +401,97 @@ fn with_save_file(func: impl FnOnce(path::PathBuf) -> Result<()>) -> Result<()> 
     match rfd::FileDialog::new().save_file() {
         Some(path) => func(path),
         None => Ok(()),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn app() {
+        let mut app = App {
+            input: String::from("分词测试案例"),
+            ..Default::default()
+        };
+
+        let segment_result = vec!["分词", "测试", "案例"];
+        let segment_granular_result = vec!["分词", "测试", "案例"];
+        let search_result = vec!["分", "分词", "词", "测", "测试", "试", "案", "案例", "例"];
+        let tag_result = vec!["分词 n", "测试 vn", "案例 n"];
+
+        assert_eq!(app.get_separator(), "\n");
+        app.segment();
+        assert_eq!(app.output, segment_result.join("\n"));
+        app.segment_granular();
+        assert_eq!(app.output, segment_granular_result.join("\n"));
+        app.search();
+        assert_eq!(app.output, search_result.join("\n"));
+        app.tag();
+        assert_eq!(app.output, tag_result.join("\n"));
+
+        let separator = " / ";
+        app.separator = String::from(separator);
+        assert_eq!(app.get_separator(), separator);
+        app.segment();
+        assert_eq!(app.output, segment_result.join(separator));
+        app.segment_granular();
+        assert_eq!(app.output, segment_granular_result.join(separator));
+        app.search();
+        assert_eq!(app.output, search_result.join(separator));
+        app.tag();
+        assert_eq!(app.output, tag_result.join(separator));
+    }
+
+    #[test]
+    fn dicts() {
+        fn check_invariant(dicts: &Dicts) {
+            assert!((0..dicts.dicts.len()).contains(&dicts.idx));
+            assert!(!dicts.dicts.is_empty());
+        }
+
+        fn with_dict<T>(strs: Vec<&str>, func: impl FnOnce(&mut io::BufReader<&[u8]>) -> T) -> T {
+            let mut str = strs.join("\n");
+            str.push('\n');
+            func(&mut io::BufReader::new(str.as_bytes()))
+        }
+
+        let mut dicts = Dicts::default();
+        check_invariant(&dicts);
+
+        assert!(with_dict(vec!["甲", "乙 20", "丙 40 m"], |buf| {
+            dicts.new_dict(String::from("example"), buf).is_ok()
+        }));
+        check_invariant(&dicts);
+
+        assert!(with_dict(vec!["天", "地 20", "人 40 m"], |buf| {
+            dicts.load_dict(buf).is_ok()
+        }));
+
+        assert!(dicts.add_word("一", "", "").is_ok());
+        assert!(dicts.add_word("二", "20", "").is_ok());
+        assert!(dicts.add_word("三", "40", "m").is_ok());
+        assert!(dicts.add_word("错误", "not a frequency", "").is_err());
+
+        let end = dicts.dicts.len() - 1;
+        dicts.idx = end;
+        for _ in 0..end {
+            assert!(dicts.remove_dict().is_ok());
+            check_invariant(&dicts);
+        }
+        assert!(dicts.remove_dict().is_err());
+    }
+
+    #[test]
+    fn error_windows() {
+        let mut error_windows = ErrorWindows::default();
+        error_windows.add("example", Box::from("one"));
+        error_windows.add("example", Box::from("two"));
+        error_windows.add("example", Box::from("three"));
+        (&mut error_windows.windows).into_iter().for_each(|win| {
+            win.open = false;
+        });
+        error_windows.cleanup();
+        assert!(error_windows.windows.is_empty());
     }
 }

@@ -271,13 +271,13 @@ impl App {
 }
 
 impl Dicts {
-    fn new_dict<R: io::BufRead>(&mut self, name: String, dict: &mut R) -> Result<()> {
+    fn new_dict(&mut self, name: String, dict: &mut impl io::BufRead) -> Result<()> {
         let jieba = jieba::Jieba::with_dict(dict)?;
         self.dicts.push(Dict { name, jieba });
         Ok(())
     }
 
-    fn load_dict<R: io::BufRead>(&mut self, dict: &mut R) -> Result<()> {
+    fn load_dict(&mut self, dict: &mut impl io::BufRead) -> Result<()> {
         self.selected().load_dict(dict)?;
         Ok(())
     }
@@ -387,20 +387,14 @@ fn make_editor(
         .desired_width(f32::INFINITY)
 }
 
-fn with_pick_file<F>(func: F) -> Result<()>
-where
-    F: FnOnce(path::PathBuf) -> Result<()>,
-{
+fn with_pick_file(func: impl FnOnce(path::PathBuf) -> Result<()>) -> Result<()> {
     match rfd::FileDialog::new().pick_file() {
         Some(path) => func(path),
         None => Ok(()),
     }
 }
 
-fn with_save_file<F>(func: F) -> Result<()>
-where
-    F: FnOnce(path::PathBuf) -> Result<()>,
-{
+fn with_save_file(func: impl FnOnce(path::PathBuf) -> Result<()>) -> Result<()> {
     match rfd::FileDialog::new().save_file() {
         Some(path) => func(path),
         None => Ok(()),

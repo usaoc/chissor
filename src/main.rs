@@ -298,6 +298,9 @@ impl Dicts {
             Err(Box::from("cannot remove the only dictionary"))
         } else {
             self.dicts.remove(self.idx);
+            if self.idx == self.dicts.len() {
+                self.idx -= 1;
+            }
             Ok(())
         }
     }

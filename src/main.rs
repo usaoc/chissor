@@ -295,14 +295,13 @@ impl Dicts {
 
     fn remove_dict(&mut self) -> Result<()> {
         if self.dicts.len() == 1 {
-            Err(Box::from("cannot remove the only dictionary"))
-        } else {
-            self.dicts.remove(self.idx);
-            if self.idx == self.dicts.len() {
-                self.idx -= 1;
-            }
-            Ok(())
+            return Err(Box::from("cannot remove the only dictionary"));
         }
+        self.dicts.remove(self.idx);
+        if self.idx == self.dicts.len() {
+            self.idx -= 1;
+        }
+        Ok(())
     }
 
     fn show_all(&mut self, ui: &mut egui::Ui) {

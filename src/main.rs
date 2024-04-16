@@ -18,6 +18,7 @@ use std::{error, fs, io, path, process, result};
 const WINDOW_TITLE: &str = "Chissor";
 fn main() {
     let options = eframe::NativeOptions {
+        viewport: egui::ViewportBuilder::default().with_maximized(true),
         default_theme: eframe::Theme::Light,
         ..Default::default()
     };

@@ -11,9 +11,12 @@ program.  If not, see <https://spdx.org/licenses/MIT.html>.  */
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 #![warn(clippy::pedantic)]
 use eframe::egui;
-use jieba_rs as jieba;
+use rust_i18n::t;
 use std::io::Write;
 use std::{error, fs, io, path, process, result};
+use {jieba_rs as jieba, rust_i18n as i18n};
+
+i18n::i18n!("locales");
 
 const WINDOW_TITLE: &str = "Chissor";
 fn main() {
@@ -34,6 +37,7 @@ type Result<T> = result::Result<T, Box<dyn error::Error>>;
 
 #[derive(Default)]
 struct App {
+    locale: Locale,
     dicts: Dicts,
     word: String,
     freq: String,
@@ -43,6 +47,12 @@ struct App {
     separator: String,
     use_hmm: bool,
     error_windows: ErrorWindows,
+}
+
+#[derive(Default)]
+enum Locale {
+    #[default]
+    EN,
 }
 
 // Invariants:
@@ -93,31 +103,33 @@ impl Default for Dicts {
 
 impl eframe::App for App {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        i18n::set_locale(self.locale.to_locale());
         self.error_windows.show_all(ctx);
+
         egui::CentralPanel::default().show(ctx, |ui| {
             let dict_area = egui::SidePanel::left("dictionary panel");
             dict_area.show_inside(ui, |ui| {
                 ui.horizontal(|ui| {
-                    if ui.button("New…").clicked() {
+                    if ui.button(t!("new-dict.text")).clicked() {
                         self.new_dict();
                     }
-                    if ui.button("Load…").clicked() {
+                    if ui.button(t!("load-dict.text")).clicked() {
                         self.load_dict();
                     }
-                    if ui.button("Add").clicked() {
+                    if ui.button(t!("add-word.text")).clicked() {
                         self.add_word();
                     }
-                    if ui.button("Remove").clicked() {
+                    if ui.button(t!("remove-dict.text")).clicked() {
                         self.remove_dict();
                     }
                 });
-                ui.add(make_field(&mut self.word, "Word"));
+                ui.add(make_field(&mut self.word, t!("word.text")));
                 ui.horizontal(|ui| {
                     // Default margin is `4.0`, so subtract `4.0 * 2` == `8.0`.
                     let width =
                         f32::min(ui.spacing().text_edit_width, ui.available_width()) / 2.0 - 8.0;
-                    ui.add(make_field(&mut self.freq, "Frequency").desired_width(width));
-                    ui.add(make_field(&mut self.tag, "Tag").desired_width(width));
+                    ui.add(make_field(&mut self.freq, t!("word.freq.text")).desired_width(width));
+                    ui.add(make_field(&mut self.tag, t!("word.tag.text")).desired_width(width));
                 });
                 ui.separator();
                 egui::ScrollArea::vertical().show(ui, |ui| {
@@ -128,42 +140,39 @@ impl eframe::App for App {
             let height = ui.available_height() / 2.0;
             let input_area = egui::TopBottomPanel::top("input panel").exact_height(height);
             input_area.show_inside(ui, |ui| {
-                if ui.button("Import from…").clicked() {
+                if ui.button(t!("import.text")).clicked() {
                     self.import();
                 }
                 ui.separator();
                 egui::ScrollArea::vertical().show(ui, |ui| {
-                    ui.add(make_editor(&mut self.input, "Input text"));
+                    ui.add(make_editor(&mut self.input, t!("input.hint")));
                 });
             });
 
             let output_area = egui::CentralPanel::default();
             output_area.show_inside(ui, |ui| {
                 ui.horizontal(|ui| {
-                    if ui.button("Export to…").clicked() {
+                    if ui.button(t!("export.text")).clicked() {
                         self.export();
                     }
-                    if ui.button("Segment").clicked() {
+                    if ui.button(t!("segment.text")).clicked() {
                         self.segment();
                     }
-                    if ui.button("Segment (granular)").clicked() {
+                    if ui.button(t!("segment-granular.text")).clicked() {
                         self.segment_granular();
                     }
-                    if ui.button("Search").clicked() {
+                    if ui.button(t!("search.text")).clicked() {
                         self.search();
                     }
-                    if ui.button("Tag").clicked() {
+                    if ui.button(t!("tag.text")).clicked() {
                         self.tag();
                     }
-                    ui.add(make_field(
-                        &mut self.separator,
-                        "Separator (newline if empty)",
-                    ));
-                    ui.checkbox(&mut self.use_hmm, "Use Hidden Markov model");
+                    ui.add(make_field(&mut self.separator, t!("separator.text")));
+                    ui.checkbox(&mut self.use_hmm, t!("use-hmm.text"));
                 });
                 ui.separator();
                 egui::ScrollArea::vertical().show(ui, |ui| {
-                    ui.add(make_editor(&mut self.output.as_str(), "Output result"));
+                    ui.add(make_editor(&mut self.output.as_str(), t!("output.hint")));
                 });
             });
         });
@@ -271,6 +280,14 @@ impl App {
     }
 }
 
+impl Locale {
+    fn to_locale(&self) -> &'static str {
+        match self {
+            Locale::EN => "en",
+        }
+    }
+}
+
 impl Dicts {
     fn new_dict(&mut self, name: String, dict: &mut impl io::BufRead) -> Result<()> {
         let jieba = jieba::Jieba::with_dict(dict)?;
@@ -322,7 +339,7 @@ impl ErrorWindows {
         self.windows.push(ErrorWindow {
             id: egui::Id::new(self.count),
             open: true,
-            title: format!("Error ({what})"),
+            title: String::from(t!("error-window.title", what = what)),
             content: err.to_string(),
         });
         self.count += 1;

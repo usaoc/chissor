@@ -1,0 +1,53 @@
+[new-dict]
+text = "New…"
+
+[load-dict]
+text = "Load…"
+
+[add-word]
+text = "Add"
+
+[remove-dict]
+text = "Remove"
+
+[word]
+text = "Word"
+
+[word.freq]
+text = "Frequency"
+
+[word.tag]
+text = "Tag"
+
+[import]
+text = "Import from…"
+
+[input]
+hint = "Input text"
+
+[export]
+text = "Export to…"
+
+[segment]
+text = "Segment"
+
+[segment-granular]
+text = "Segment (granular)"
+
+[search]
+text = "Search"
+
+[tag]
+text = "Tag"
+
+[separator]
+text = "Separator (newline if empty)"
+
+[use-hmm]
+text = "Use Hidden Markov model"
+
+[output]
+hint = "Output result"
+
+[error-window]
+title = "Error (%{what})"

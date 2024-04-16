@@ -12,6 +12,8 @@
 !dicts/dict.txt*
 !fonts/
 !fonts/*.otf
+!locales/
+!locales/*.toml
 !.github
 !.github/workflows
 !.github/workflows/*.yaml

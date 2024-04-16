@@ -110,26 +110,45 @@ impl eframe::App for App {
             let dict_area = egui::SidePanel::left("dictionary panel");
             dict_area.show_inside(ui, |ui| {
                 ui.horizontal(|ui| {
-                    if ui.button(t!("new-dict.text")).clicked() {
+                    if ui
+                        .button(t!("new-dict.text"))
+                        .on_hover_text(t!("new-dict.hover"))
+                        .clicked()
+                    {
                         self.new_dict();
                     }
-                    if ui.button(t!("load-dict.text")).clicked() {
+                    if ui
+                        .button(t!("load-dict.text"))
+                        .on_hover_text(t!("load-dict.hover"))
+                        .clicked()
+                    {
                         self.load_dict();
                     }
-                    if ui.button(t!("add-word.text")).clicked() {
+                    if ui
+                        .button(t!("add-word.text"))
+                        .on_hover_text(t!("add-word.hover"))
+                        .clicked()
+                    {
                         self.add_word();
                     }
-                    if ui.button(t!("remove-dict.text")).clicked() {
+                    if ui
+                        .button(t!("remove-dict.text"))
+                        .on_hover_text(t!("remove-dict.hover"))
+                        .clicked()
+                    {
                         self.remove_dict();
                     }
                 });
-                ui.add(make_field(&mut self.word, t!("word.text")));
+                ui.add(make_field(&mut self.word, t!("word.text")))
+                    .on_hover_text(t!("word.hover"));
                 ui.horizontal(|ui| {
                     // Default margin is `4.0`, so subtract `4.0 * 2` == `8.0`.
                     let width =
                         f32::min(ui.spacing().text_edit_width, ui.available_width()) / 2.0 - 8.0;
-                    ui.add(make_field(&mut self.freq, t!("word.freq.text")).desired_width(width));
-                    ui.add(make_field(&mut self.tag, t!("word.tag.text")).desired_width(width));
+                    ui.add(make_field(&mut self.freq, t!("word.freq.text")).desired_width(width))
+                        .on_hover_text(t!("word.freq.hover"));
+                    ui.add(make_field(&mut self.tag, t!("word.tag.text")).desired_width(width))
+                        .on_hover_text(t!("word.tag.hover"));
                 });
                 ui.separator();
                 egui::ScrollArea::vertical().show(ui, |ui| {
@@ -140,7 +159,11 @@ impl eframe::App for App {
             let height = ui.available_height() / 2.0;
             let input_area = egui::TopBottomPanel::top("input panel").exact_height(height);
             input_area.show_inside(ui, |ui| {
-                if ui.button(t!("import.text")).clicked() {
+                if ui
+                    .button(t!("import.text"))
+                    .on_hover_text(t!("import.hover"))
+                    .clicked()
+                {
                     self.import();
                 }
                 ui.separator();
@@ -152,23 +175,45 @@ impl eframe::App for App {
             let output_area = egui::CentralPanel::default();
             output_area.show_inside(ui, |ui| {
                 ui.horizontal(|ui| {
-                    if ui.button(t!("export.text")).clicked() {
+                    if ui
+                        .button(t!("export.text"))
+                        .on_hover_text(t!("export.hover"))
+                        .clicked()
+                    {
                         self.export();
                     }
-                    if ui.button(t!("segment.text")).clicked() {
+                    if ui
+                        .button(t!("segment.text"))
+                        .on_hover_text(t!("segment.hover"))
+                        .clicked()
+                    {
                         self.segment();
                     }
-                    if ui.button(t!("segment-granular.text")).clicked() {
+                    if ui
+                        .button(t!("segment-granular.text"))
+                        .on_hover_text(t!("segment-granular.hover"))
+                        .clicked()
+                    {
                         self.segment_granular();
                     }
-                    if ui.button(t!("search.text")).clicked() {
+                    if ui
+                        .button(t!("search.text"))
+                        .on_hover_text(t!("search.hover"))
+                        .clicked()
+                    {
                         self.search();
                     }
-                    if ui.button(t!("tag.text")).clicked() {
+                    if ui
+                        .button(t!("tag.text"))
+                        .on_hover_text(t!("tag.hover"))
+                        .clicked()
+                    {
                         self.tag();
                     }
-                    ui.add(make_field(&mut self.separator, t!("separator.text")));
-                    ui.checkbox(&mut self.use_hmm, t!("use-hmm.text"));
+                    ui.add(make_field(&mut self.separator, t!("separator.text")))
+                        .on_hover_text(t!("separator.hover"));
+                    ui.checkbox(&mut self.use_hmm, t!("use-hmm.text"))
+                        .on_hover_text(t!("use-hmm.hover"));
                 });
                 ui.separator();
                 egui::ScrollArea::vertical().show(ui, |ui| {

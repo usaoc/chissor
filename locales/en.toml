@@ -1,50 +1,71 @@
 [new-dict]
 text = "New…"
+hover = "Initialize new dictionary from file"
 
 [load-dict]
 text = "Load…"
+hover = "Load into the selected dictionary from file"
 
 [add-word]
 text = "Add"
+hover = "Add word into the selected dictionary"
 
 [remove-dict]
 text = "Remove"
+hover = "Remove the selected dictionary"
 
 [word]
 text = "Word"
+hover = "Word to add into the selected dictionary"
 
 [word.freq]
 text = "Frequency"
+hover = """
+Frequency to associate with the added word
+Must be an unsigned integer"""
 
 [word.tag]
 text = "Tag"
+hover = "Tag to associate with the added word"
 
 [import]
 text = "Import from…"
+hover = "Import input text from file"
 
 [input]
 hint = "Input text"
 
 [export]
 text = "Export to…"
+hover = "Export output result to file"
 
 [segment]
 text = "Segment"
+hover = "Segment input text"
 
 [segment-granular]
 text = "Segment (granular)"
+hover = "Segment input text with a smaller granularity"
 
 [search]
 text = "Search"
+hover = """
+Search input text for all possible words
+Does not use Hidden Markov Model"""
 
 [tag]
 text = "Tag"
+hover = "Tag input text"
 
 [separator]
-text = "Separator (newline if empty)"
+text = "Separator"
+hover = """
+Separator to add between result items
+Default to newline if empty"""
 
 [use-hmm]
-text = "Use Hidden Markov model"
+text = "Hidden Markov model"
+hover = "Use Hidden Markov model for some operations"
 
 [output]
 hint = "Output result"

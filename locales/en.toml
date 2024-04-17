@@ -1,13 +1,16 @@
 [new-dict]
 text = "New…"
+what = "new"
 hover = "Initialize new dictionary from file"
 
 [load-dict]
 text = "Load…"
+what = "load"
 hover = "Load into the selected dictionary from file"
 
 [add-word]
 text = "Add"
+what = "add"
 hover = "Add word into the selected dictionary"
 
 [remove-dict]
@@ -30,6 +33,7 @@ hover = "Tag to associate with the added word"
 
 [import]
 text = "Import from…"
+what = "import"
 hover = "Import input text from file"
 
 [input]
@@ -37,6 +41,7 @@ hint = "Input text"
 
 [export]
 text = "Export to…"
+what = "export"
 hover = "Export output result to file"
 
 [segment]
@@ -51,7 +56,7 @@ hover = "Segment input text with a smaller granularity"
 text = "Search"
 hover = """
 Search input text for all possible words
-Does not use Hidden Markov Model"""
+Does not use Hidden Markov model"""
 
 [tag]
 text = "Tag"

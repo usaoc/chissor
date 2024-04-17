@@ -246,7 +246,7 @@ impl App {
             self.dicts.new_dict(name, &mut io::BufReader::new(file))?;
             Ok(())
         }) {
-            self.error_windows.add("new", err);
+            self.error_windows.add(&t!("new-dict.what"), err);
         }
     }
 
@@ -256,13 +256,13 @@ impl App {
             self.dicts.load_dict(&mut io::BufReader::new(file))?;
             Ok(())
         }) {
-            self.error_windows.add("load", err);
+            self.error_windows.add(&t!("load-dict.what"), err);
         }
     }
 
     fn add_word(&mut self) {
         if let Err(err) = self.dicts.add_word(&self.word, &self.freq, &self.tag) {
-            self.error_windows.add("add", err);
+            self.error_windows.add(&t!("add-word.what"), err);
         }
     }
 
@@ -271,7 +271,7 @@ impl App {
             self.input = String::from(fs::read_to_string(path)?.trim());
             Ok(())
         }) {
-            self.error_windows.add("import", err);
+            self.error_windows.add(&t!("import.what"), err);
         }
     }
 
@@ -281,7 +281,7 @@ impl App {
             writeln!(&mut buf, "{output}", output = self.output)?;
             Ok(())
         }) {
-            self.error_windows.add("export", err);
+            self.error_windows.add(&t!("export.what"), err);
         }
     }
 

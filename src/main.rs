@@ -52,7 +52,7 @@ struct App {
 #[derive(Default)]
 enum Locale {
     #[default]
-    EN,
+    En,
 }
 
 // Invariants:
@@ -105,126 +105,133 @@ impl eframe::App for App {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         i18n::set_locale(self.locale.to_locale());
         self.error_windows.show_all(ctx);
-
         egui::CentralPanel::default().show(ctx, |ui| {
-            let dict_area = egui::SidePanel::left("dictionary panel");
-            dict_area.show_inside(ui, |ui| {
-                ui.horizontal(|ui| {
-                    if ui
-                        .button(t!("new-dict.text"))
-                        .on_hover_text(t!("new-dict.hover"))
-                        .clicked()
-                    {
-                        self.new_dict();
-                    }
-                    if ui
-                        .button(t!("load-dict.text"))
-                        .on_hover_text(t!("load-dict.hover"))
-                        .clicked()
-                    {
-                        self.load_dict();
-                    }
-                    if ui
-                        .button(t!("add-word.text"))
-                        .on_hover_text(t!("add-word.hover"))
-                        .clicked()
-                    {
-                        self.add_word();
-                    }
-                    if ui
-                        .button(t!("remove-dict.text"))
-                        .on_hover_text(t!("remove-dict.hover"))
-                        .clicked()
-                    {
-                        self.remove_dict();
-                    }
-                });
-                ui.add(make_field(&mut self.word, t!("word.text")))
-                    .on_hover_text(t!("word.hover"));
-                ui.horizontal(|ui| {
-                    // Default margin is `4.0`, so subtract `4.0 * 2` == `8.0`.
-                    let width =
-                        f32::min(ui.spacing().text_edit_width, ui.available_width()) / 2.0 - 8.0;
-                    ui.add(make_field(&mut self.freq, t!("word.freq.text")).desired_width(width))
-                        .on_hover_text(t!("word.freq.hover"));
-                    ui.add(make_field(&mut self.tag, t!("word.tag.text")).desired_width(width))
-                        .on_hover_text(t!("word.tag.hover"));
-                });
-                ui.separator();
-                egui::ScrollArea::vertical().show(ui, |ui| {
-                    self.dicts.show_all(ui);
-                });
+            egui::SidePanel::left("dict panel").show_inside(ui, |ui| {
+                self.show_dict_panel(ui);
             });
-
-            let height = ui.available_height() / 2.0;
-            let input_area = egui::TopBottomPanel::top("input panel").exact_height(height);
-            input_area.show_inside(ui, |ui| {
-                if ui
-                    .button(t!("import.text"))
-                    .on_hover_text(t!("import.hover"))
-                    .clicked()
-                {
-                    self.import();
-                }
-                ui.separator();
-                egui::ScrollArea::vertical().show(ui, |ui| {
-                    ui.add(make_editor(&mut self.input, t!("input.hint")));
+            egui::TopBottomPanel::top("input area")
+                .exact_height(ui.available_height() / 2.0)
+                .show_inside(ui, |ui| {
+                    self.show_input_area(ui);
                 });
-            });
-
-            let output_area = egui::CentralPanel::default();
-            output_area.show_inside(ui, |ui| {
-                ui.horizontal(|ui| {
-                    if ui
-                        .button(t!("export.text"))
-                        .on_hover_text(t!("export.hover"))
-                        .clicked()
-                    {
-                        self.export();
-                    }
-                    if ui
-                        .button(t!("segment.text"))
-                        .on_hover_text(t!("segment.hover"))
-                        .clicked()
-                    {
-                        self.segment();
-                    }
-                    if ui
-                        .button(t!("segment-granular.text"))
-                        .on_hover_text(t!("segment-granular.hover"))
-                        .clicked()
-                    {
-                        self.segment_granular();
-                    }
-                    if ui
-                        .button(t!("search.text"))
-                        .on_hover_text(t!("search.hover"))
-                        .clicked()
-                    {
-                        self.search();
-                    }
-                    if ui
-                        .button(t!("tag.text"))
-                        .on_hover_text(t!("tag.hover"))
-                        .clicked()
-                    {
-                        self.tag();
-                    }
-                    ui.add(make_field(&mut self.separator, t!("separator.text")))
-                        .on_hover_text(t!("separator.hover"));
-                    ui.checkbox(&mut self.use_hmm, t!("use-hmm.text"))
-                        .on_hover_text(t!("use-hmm.hover"));
-                });
-                ui.separator();
-                egui::ScrollArea::vertical().show(ui, |ui| {
-                    ui.add(make_editor(&mut self.output.as_str(), t!("output.hint")));
-                });
+            egui::CentralPanel::default().show_inside(ui, |ui| {
+                self.show_output_area(ui);
             });
         });
     }
 }
 
 impl App {
+    fn show_dict_panel(&mut self, ui: &mut egui::Ui) {
+        ui.horizontal(|ui| {
+            if ui
+                .button(t!("new-dict.text"))
+                .on_hover_text(t!("new-dict.hover"))
+                .clicked()
+            {
+                self.new_dict();
+            }
+            if ui
+                .button(t!("load-dict.text"))
+                .on_hover_text(t!("load-dict.hover"))
+                .clicked()
+            {
+                self.load_dict();
+            }
+            if ui
+                .button(t!("add-word.text"))
+                .on_hover_text(t!("add-word.hover"))
+                .clicked()
+            {
+                self.add_word();
+            }
+            if ui
+                .button(t!("remove-dict.text"))
+                .on_hover_text(t!("remove-dict.hover"))
+                .clicked()
+            {
+                self.remove_dict();
+            }
+        });
+        ui.add(make_field(&mut self.word, t!("word.text")))
+            .on_hover_text(t!("word.hover"));
+        ui.horizontal(|ui| {
+            let width = f32::min(ui.spacing().text_edit_width, ui.available_width());
+            // Default margin is `4.0`, so subtract `4.0 * 2` == `8.0`.
+            let width = (width / 2.0) - 8.0;
+            ui.add(make_field(&mut self.freq, t!("word.freq.text")).desired_width(width))
+                .on_hover_text(t!("word.freq.hover"));
+            ui.add(make_field(&mut self.tag, t!("word.tag.text")).desired_width(width))
+                .on_hover_text(t!("word.tag.hover"));
+        });
+        ui.separator();
+        egui::ScrollArea::vertical().show(ui, |ui| {
+            self.dicts.show_all(ui);
+        });
+    }
+
+    fn show_input_area(&mut self, ui: &mut egui::Ui) {
+        if ui
+            .button(t!("import.text"))
+            .on_hover_text(t!("import.hover"))
+            .clicked()
+        {
+            self.import();
+        }
+        ui.separator();
+        egui::ScrollArea::vertical().show(ui, |ui| {
+            ui.add(make_editor(&mut self.input, t!("input.hint")));
+        });
+    }
+
+    fn show_output_area(&mut self, ui: &mut egui::Ui) {
+        ui.horizontal(|ui| {
+            if ui
+                .button(t!("export.text"))
+                .on_hover_text(t!("export.hover"))
+                .clicked()
+            {
+                self.export();
+            }
+            if ui
+                .button(t!("segment.text"))
+                .on_hover_text(t!("segment.hover"))
+                .clicked()
+            {
+                self.segment();
+            }
+            if ui
+                .button(t!("segment-granular.text"))
+                .on_hover_text(t!("segment-granular.hover"))
+                .clicked()
+            {
+                self.segment_granular();
+            }
+            if ui
+                .button(t!("search.text"))
+                .on_hover_text(t!("search.hover"))
+                .clicked()
+            {
+                self.search();
+            }
+            if ui
+                .button(t!("tag.text"))
+                .on_hover_text(t!("tag.hover"))
+                .clicked()
+            {
+                self.tag();
+            }
+            ui.add(make_field(&mut self.separator, t!("separator.text")))
+                .on_hover_text(t!("separator.hover"));
+            ui.checkbox(&mut self.use_hmm, t!("use-hmm.text"))
+                .on_hover_text(t!("use-hmm.hover"));
+        });
+        ui.separator();
+        egui::ScrollArea::vertical().show(ui, |ui| {
+            ui.add(make_editor(&mut &*self.output, t!("output.hint")));
+        });
+    }
+
     fn new_dict(&mut self) {
         if let Err(err) = with_pick_file(|path| {
             let name = String::from(path.file_name().unwrap().to_string_lossy());
@@ -247,10 +254,7 @@ impl App {
     }
 
     fn add_word(&mut self) {
-        if let Err(err) =
-            self.dicts
-                .add_word(self.word.as_str(), self.freq.as_str(), self.tag.as_str())
-        {
+        if let Err(err) = self.dicts.add_word(&self.word, &self.freq, &self.tag) {
             self.error_windows.add("add", err);
         }
     }
@@ -316,7 +320,7 @@ impl App {
     }
 
     fn get_separator(&self) -> &str {
-        let sep = self.separator.as_str();
+        let sep = &self.separator;
         if sep.is_empty() {
             "\n"
         } else {
@@ -328,15 +332,18 @@ impl App {
 impl Locale {
     fn to_locale(&self) -> &'static str {
         match self {
-            Locale::EN => "en",
+            Locale::En => "en",
         }
     }
 }
 
 impl Dicts {
-    fn new_dict(&mut self, name: String, dict: &mut impl io::BufRead) -> Result<()> {
+    fn new_dict(&mut self, name: impl Into<String>, dict: &mut impl io::BufRead) -> Result<()> {
         let jieba = jieba::Jieba::with_dict(dict)?;
-        self.dicts.push(Dict { name, jieba });
+        self.dicts.push(Dict {
+            name: name.into(),
+            jieba,
+        });
         Ok(())
     }
 
@@ -415,17 +422,18 @@ impl ErrorWindow {
     }
 }
 
+const FONT_NAME: &str = "noto-sans-cjk";
 fn make_cjk_font_defs() -> egui::FontDefinitions {
     let mut fonts = egui::FontDefinitions::empty();
     fonts.font_data.insert(
-        String::from("noto-sans-cjk"),
+        String::from(FONT_NAME),
         egui::FontData::from_static(include_bytes!("../fonts/NotoSansCJKsc-Regular.otf")),
     );
     fonts
         .families
         .get_mut(&egui::FontFamily::Proportional)
         .unwrap()
-        .insert(0, String::from("noto-sans-cjk"));
+        .insert(0, String::from(FONT_NAME));
     fonts
 }
 
@@ -523,7 +531,7 @@ mod tests {
         check_invariant(&dicts);
 
         assert!(with_dict(vec!["甲", "乙 20", "丙 40 m"], |buf| {
-            dicts.new_dict(String::from("example"), buf).is_ok()
+            dicts.new_dict("example", buf).is_ok()
         }));
         check_invariant(&dicts);
 

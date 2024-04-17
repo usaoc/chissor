@@ -146,11 +146,14 @@ impl App {
                 self.add_word();
             }
             if ui
-                .button(t!("remove-dict.text"))
+                .add_enabled(
+                    self.dicts.can_remove_dict(),
+                    egui::Button::new(t!("remove-dict.text")),
+                )
                 .on_hover_text(t!("remove-dict.hover"))
                 .clicked()
             {
-                self.remove_dict();
+                self.dicts.remove_dict();
             }
         });
         ui.add(make_field(&mut self.word, t!("word.text")))
@@ -263,12 +266,6 @@ impl App {
         }
     }
 
-    fn remove_dict(&mut self) {
-        if let Err(err) = self.dicts.remove_dict() {
-            self.error_windows.add("remove", err);
-        }
-    }
-
     fn import(&mut self) {
         if let Err(err) = with_pick_file(|path| {
             self.input = String::from(fs::read_to_string(path)?.trim());
@@ -367,15 +364,18 @@ impl Dicts {
         Ok(())
     }
 
-    fn remove_dict(&mut self) -> Result<()> {
-        if self.dicts.len() == 1 {
-            return Err(Box::from("cannot remove the only dictionary"));
+    fn can_remove_dict(&self) -> bool {
+        self.dicts.len() != 1
+    }
+
+    fn remove_dict(&mut self) {
+        if !self.can_remove_dict() {
+            unreachable!("must not trigger this action for the only dictionary");
         }
         self.dicts.remove(self.idx);
         if self.idx == self.dicts.len() {
             self.idx -= 1;
         }
-        Ok(())
     }
 
     fn show_all(&mut self, ui: &mut egui::Ui) {
@@ -556,10 +556,11 @@ mod tests {
         let end = dicts.dicts.len() - 1;
         dicts.idx = end;
         for _ in 0..end {
-            assert!(dicts.remove_dict().is_ok());
+            assert!(dicts.can_remove_dict());
+            dicts.remove_dict();
             check_invariant(&dicts);
         }
-        assert!(dicts.remove_dict().is_err());
+        assert!(!dicts.can_remove_dict());
     }
 
     #[test]

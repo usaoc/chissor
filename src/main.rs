@@ -140,7 +140,7 @@ impl App {
                 self.load_dict();
             }
             if ui
-                .button(t!("add-word.text"))
+                .add_enabled(self.can_add_word(), egui::Button::new(t!("add-word.text")))
                 .on_hover_text(t!("add-word.hover"))
                 .clicked()
             {
@@ -278,7 +278,14 @@ impl App {
         }
     }
 
+    fn can_add_word(&self) -> bool {
+        !self.word.is_empty()
+    }
+
     fn add_word(&mut self) {
+        if !self.can_add_word() {
+            unreachable!("must not trigger this action for empty word")
+        }
         if let Err(err) = self.dicts.add_word(&self.word, &self.freq, &self.tag) {
             self.error_windows.add(&t!("add-word.what"), err);
         }
@@ -541,6 +548,10 @@ mod tests {
         assert_eq!(app.output, search_result.join(separator));
         app.tag();
         assert_eq!(app.output, tag_result.join(separator));
+
+        assert!(!app.can_add_word());
+        app.word = String::from("词语");
+        assert!(app.can_add_word());
     }
 
     #[test]

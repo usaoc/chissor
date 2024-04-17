@@ -1,0 +1,83 @@
+[new-dict]
+text = "新建…"
+what = "新建"
+hover = "从文件新建并初始化词典"
+
+[load-dict]
+text = "加载…"
+what = "加载"
+hover = "从文件加载进入所选择的词典"
+
+[add-word]
+text = "添加"
+what = "添加"
+hover = "向所选择的词典添加词语"
+
+[remove-dict]
+text = "移除"
+hover = "移除所选择的词典"
+
+[word]
+text = "词语"
+hover = "向所选择的词典添加的词语"
+
+[word.freq]
+text = "词频"
+hover = """
+与所添加的词语关联的词频
+必须为无符号整数"""
+
+[word.tag]
+text = "词性"
+hover = "与所添加的词语关联的词性"
+
+[import]
+text = "导入…"
+what = "导入"
+hover = "从文件导入输入文本"
+
+[lang]
+text = "语言"
+hover = "更改界面语言"
+
+[input]
+hint = "输入文本"
+
+[export]
+text = "导出…"
+what = "导出"
+hover = "向文件导出输出结果"
+
+[segment]
+text = "分词"
+hover = "将输入文本分词"
+
+[segment-granular]
+text = "分词（细粒度）"
+hover = "以更细的粒度将输入文本分词"
+
+[search]
+text = "搜索"
+hover = """
+在输入文本中搜索所有可能的词语
+并不使用隐 Markov 模型"""
+
+[tag]
+text = "标注"
+hover = "将输入文本标注"
+
+[separator]
+text = "分隔符"
+hover = """
+在结果项目之间加入的分隔符
+如空则默认为分行"""
+
+[use-hmm]
+text = "隐 Markov 模型"
+hover = "在进行某些操作时使用隐 Markov 模型"
+
+[output]
+hint = "输出结果"
+
+[error-window]
+title = "错误（%{what}）"

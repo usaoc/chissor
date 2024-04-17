@@ -49,10 +49,12 @@ struct App {
     error_windows: ErrorWindows,
 }
 
-#[derive(Default)]
+#[derive(Default, PartialEq)]
 enum Locale {
     #[default]
     En,
+    ZhCn,
+    ZhHk,
 }
 
 // Invariants:
@@ -103,7 +105,6 @@ impl Default for Dicts {
 
 impl eframe::App for App {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        i18n::set_locale(self.locale.to_locale());
         self.error_windows.show_all(ctx);
         egui::CentralPanel::default().show(ctx, |ui| {
             egui::SidePanel::left("dict panel").show_inside(ui, |ui| {
@@ -174,13 +175,30 @@ impl App {
     }
 
     fn show_input_area(&mut self, ui: &mut egui::Ui) {
-        if ui
-            .button(t!("import.text"))
-            .on_hover_text(t!("import.hover"))
-            .clicked()
-        {
-            self.import();
-        }
+        ui.horizontal(|ui| {
+            if ui
+                .button(t!("import.text"))
+                .on_hover_text(t!("import.hover"))
+                .clicked()
+            {
+                self.import();
+            }
+            ui.menu_button(t!("lang.text"), |ui| {
+                for locale in [Locale::En, Locale::ZhCn, Locale::ZhHk] {
+                    let text = t!(locale.to_locale(), locale = "lang");
+                    if ui
+                        .selectable_value(&mut self.locale, locale, text)
+                        .clicked()
+                    {
+                        i18n::set_locale(self.locale.to_locale());
+                        ui.close_menu();
+                        break;
+                    }
+                }
+            })
+            .response
+            .on_hover_text(t!("lang.hover"));
+        });
         ui.separator();
         egui::ScrollArea::vertical().show(ui, |ui| {
             ui.add(make_editor(&mut self.input, t!("input.hint")));
@@ -334,6 +352,8 @@ impl Locale {
     fn to_locale(&self) -> &'static str {
         match self {
             Locale::En => "en",
+            Locale::ZhCn => "zh-CN",
+            Locale::ZhHk => "zh-HK",
         }
     }
 }

@@ -36,6 +36,10 @@ text = "Import from…"
 what = "import"
 hover = "Import input text from file"
 
+[lang]
+text = "Language"
+hover = "Change interface language"
+
 [input]
 hint = "Input text"
 

@@ -234,7 +234,11 @@ impl App {
 
     fn new_dict(&mut self) {
         if let Err(err) = with_pick_file(|path| {
-            let name = String::from(path.file_name().unwrap().to_string_lossy());
+            let name = String::from(
+                path.file_name()
+                    .expect("cannot be `None`; must have picked a regular file")
+                    .to_string_lossy(),
+            );
             let file = fs::File::open(path)?;
             self.dicts.new_dict(name, &mut io::BufReader::new(file))?;
             Ok(())
@@ -376,12 +380,16 @@ impl Dicts {
 
     fn show_all(&mut self, ui: &mut egui::Ui) {
         for idx in 0..self.dicts.len() {
-            ui.radio_value(&mut self.idx, idx, &self.dicts.get(idx).unwrap().name);
+            ui.radio_value(&mut self.idx, idx, &self.dicts[idx].name);
         }
     }
 
     fn selected(&mut self) -> &mut jieba::Jieba {
-        &mut self.dicts.get_mut(self.idx).unwrap().jieba
+        &mut self
+            .dicts
+            .get_mut(self.idx)
+            .expect("cannot be `None`; must have maintained the invariants")
+            .jieba
     }
 }
 
@@ -432,7 +440,7 @@ fn make_cjk_font_defs() -> egui::FontDefinitions {
     fonts
         .families
         .get_mut(&egui::FontFamily::Proportional)
-        .unwrap()
+        .expect("cannot be `None`; must have inserted the font")
         .insert(0, String::from(FONT_NAME));
     fonts
 }
@@ -440,7 +448,8 @@ fn make_cjk_font_defs() -> egui::FontDefinitions {
 fn make_dict_static(name: &'static str, bytes: &'static [u8]) -> Dict {
     Dict {
         name: String::from(name),
-        jieba: jieba::Jieba::with_dict(&mut io::BufReader::new(bytes)).unwrap(),
+        jieba: jieba::Jieba::with_dict(&mut io::BufReader::new(bytes))
+            .expect("cannot be `Err(_)`; must have provided a valid static dict"),
     }
 }
 

@@ -45,7 +45,7 @@ what = "導入"
 hover = "從文件導入輸入文本"
 
 [input]
-hint = "輸入文本"
+text = "輸入文本"
 
 [export]
 text = "導出…"
@@ -81,7 +81,7 @@ text = "隱 Markov 模型"
 hover = "在進行某些操作時使用隱 Markov 模型"
 
 [output]
-hint = "輸出結果"
+text = "輸出結果"
 
 [error-window]
 title = "錯誤（%{what}）"

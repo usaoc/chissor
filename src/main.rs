@@ -234,7 +234,7 @@ impl App {
         egui::ScrollArea::vertical().show(ui, |ui| {
             ui.add_sized(
                 ui.available_size(),
-                egui::TextEdit::multiline(&mut self.input).hint_text(t!("input.hint")),
+                egui::TextEdit::multiline(&mut self.input).hint_text(t!("input.text")),
             );
         });
     }
@@ -281,7 +281,7 @@ impl App {
         egui::ScrollArea::vertical().show(ui, |ui| {
             ui.add_sized(
                 ui.available_size(),
-                egui::TextEdit::multiline(&mut &*self.output).hint_text(t!("output.hint")),
+                egui::TextEdit::multiline(&mut &*self.output).hint_text(t!("output.text")),
             );
         });
     }

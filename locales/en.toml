@@ -45,7 +45,7 @@ what = "import"
 hover = "Import input text from file"
 
 [input]
-hint = "Input text"
+text = "Input text"
 
 [export]
 text = "Export to…"
@@ -81,7 +81,7 @@ text = "Hidden Markov model"
 hover = "Use Hidden Markov model for some operations"
 
 [output]
-hint = "Output result"
+text = "Output result"
 
 [error-window]
 title = "Error (%{what})"

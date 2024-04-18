@@ -45,7 +45,7 @@ what = "导入"
 hover = "从文件导入输入文本"
 
 [input]
-hint = "输入文本"
+text = "输入文本"
 
 [export]
 text = "导出…"
@@ -81,7 +81,7 @@ text = "隐 Markov 模型"
 hover = "在进行某些操作时使用隐 Markov 模型"
 
 [output]
-hint = "输出结果"
+text = "输出结果"
 
 [error-window]
 title = "错误（%{what}）"

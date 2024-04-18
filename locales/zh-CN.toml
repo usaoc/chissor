@@ -1,3 +1,11 @@
+[menu.output]
+text = "输出"
+hover = "更改输出设置"
+
+[menu.lang]
+text = "语言"
+hover = "更改界面语言"
+
 [new-dict]
 text = "新建…"
 what = "新建"
@@ -35,10 +43,6 @@ hover = "与所添加的词语关联的词性"
 text = "导入…"
 what = "导入"
 hover = "从文件导入输入文本"
-
-[lang]
-text = "语言"
-hover = "更改界面语言"
 
 [input]
 hint = "输入文本"

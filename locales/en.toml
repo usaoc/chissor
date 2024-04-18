@@ -1,3 +1,11 @@
+[menu.output]
+text = "Output"
+hover = "Change output setting"
+
+[menu.lang]
+text = "Language"
+hover = "Change interface language"
+
 [new-dict]
 text = "New…"
 what = "new"
@@ -35,10 +43,6 @@ hover = "Tag to associate with the added word"
 text = "Import from…"
 what = "import"
 hover = "Import input text from file"
-
-[lang]
-text = "Language"
-hover = "Change interface language"
 
 [input]
 hint = "Input text"

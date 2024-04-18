@@ -106,10 +106,15 @@ impl Default for Dicts {
 impl eframe::App for App {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         self.error_windows.show_all(ctx);
+        egui::TopBottomPanel::top("menu area").show(ctx, |ui| {
+            self.show_menu_area(ui);
+        });
         egui::CentralPanel::default().show(ctx, |ui| {
-            egui::SidePanel::left("dict panel").show_inside(ui, |ui| {
-                self.show_dict_panel(ui);
-            });
+            egui::SidePanel::left("dict panel")
+                .resizable(false)
+                .show_inside(ui, |ui| {
+                    self.show_dict_panel(ui);
+                });
             egui::TopBottomPanel::top("input area")
                 .exact_height(ui.available_height() / 2.0)
                 .show_inside(ui, |ui| {
@@ -123,6 +128,36 @@ impl eframe::App for App {
 }
 
 impl App {
+    fn show_menu_area(&mut self, ui: &mut egui::Ui) {
+        ui.horizontal(|ui| {
+            ui.menu_button(t!("menu.output.text"), |ui| {
+                ui.add(
+                    egui::TextEdit::singleline(&mut self.separator).hint_text(t!("separator.text")),
+                )
+                .on_hover_text(t!("separator.hover"));
+                ui.checkbox(&mut self.use_hmm, t!("use-hmm.text"))
+                    .on_hover_text(t!("use-hmm.hover"));
+            })
+            .response
+            .on_hover_text(t!("menu.output.hover"));
+            ui.menu_button(t!("menu.lang.text"), |ui| {
+                for locale in [Locale::En, Locale::ZhCn, Locale::ZhHk] {
+                    let text = t!(locale.to_locale(), locale = "lang");
+                    if ui
+                        .selectable_value(&mut self.locale, locale, text)
+                        .clicked()
+                    {
+                        i18n::set_locale(self.locale.to_locale());
+                        ui.close_menu();
+                        break;
+                    }
+                }
+            })
+            .response
+            .on_hover_text(t!("menu.lang.hover"));
+        });
+    }
+
     fn show_dict_panel(&mut self, ui: &mut egui::Ui) {
         ui.horizontal(|ui| {
             if ui
@@ -157,16 +192,27 @@ impl App {
                 self.dicts.remove_dict();
             }
         });
-        ui.add(make_field(&mut self.word, t!("word.text")))
-            .on_hover_text(t!("word.hover"));
+        ui.add(
+            egui::TextEdit::singleline(&mut self.word)
+                .hint_text(t!("word.text"))
+                .desired_width(ui.available_width()),
+        )
+        .on_hover_text(t!("word.hover"));
         ui.horizontal(|ui| {
-            let width = f32::min(ui.spacing().text_edit_width, ui.available_width());
             // Default margin is `4.0`, so subtract `4.0 * 2` == `8.0`.
-            let width = (width / 2.0) - 8.0;
-            ui.add(make_field(&mut self.freq, t!("word.freq.text")).desired_width(width))
-                .on_hover_text(t!("word.freq.hover"));
-            ui.add(make_field(&mut self.tag, t!("word.tag.text")).desired_width(width))
-                .on_hover_text(t!("word.tag.hover"));
+            let width = (ui.available_width() / 2.0) - 8.0;
+            ui.add(
+                egui::TextEdit::singleline(&mut self.freq)
+                    .hint_text(t!("word.freq.text"))
+                    .desired_width(width),
+            )
+            .on_hover_text(t!("word.freq.hover"));
+            ui.add(
+                egui::TextEdit::singleline(&mut self.tag)
+                    .hint_text(t!("word.tag.text"))
+                    .desired_width(width),
+            )
+            .on_hover_text(t!("word.tag.hover"));
         });
         ui.separator();
         egui::ScrollArea::vertical().show(ui, |ui| {
@@ -183,25 +229,13 @@ impl App {
             {
                 self.import();
             }
-            ui.menu_button(t!("lang.text"), |ui| {
-                for locale in [Locale::En, Locale::ZhCn, Locale::ZhHk] {
-                    let text = t!(locale.to_locale(), locale = "lang");
-                    if ui
-                        .selectable_value(&mut self.locale, locale, text)
-                        .clicked()
-                    {
-                        i18n::set_locale(self.locale.to_locale());
-                        ui.close_menu();
-                        break;
-                    }
-                }
-            })
-            .response
-            .on_hover_text(t!("lang.hover"));
         });
         ui.separator();
         egui::ScrollArea::vertical().show(ui, |ui| {
-            ui.add(make_editor(&mut self.input, t!("input.hint")));
+            ui.add_sized(
+                ui.available_size(),
+                egui::TextEdit::multiline(&mut self.input).hint_text(t!("input.hint")),
+            );
         });
     }
 
@@ -242,14 +276,13 @@ impl App {
             {
                 self.tag();
             }
-            ui.add(make_field(&mut self.separator, t!("separator.text")))
-                .on_hover_text(t!("separator.hover"));
-            ui.checkbox(&mut self.use_hmm, t!("use-hmm.text"))
-                .on_hover_text(t!("use-hmm.hover"));
         });
         ui.separator();
         egui::ScrollArea::vertical().show(ui, |ui| {
-            ui.add(make_editor(&mut &*self.output, t!("output.hint")));
+            ui.add_sized(
+                ui.available_size(),
+                egui::TextEdit::multiline(&mut &*self.output).hint_text(t!("output.hint")),
+            );
         });
     }
 
@@ -478,23 +511,6 @@ fn make_dict_static(name: &'static str, bytes: &'static [u8]) -> Dict {
         jieba: jieba::Jieba::with_dict(&mut io::BufReader::new(bytes))
             .expect("cannot be `Err(_)`; must have provided a valid static dict"),
     }
-}
-
-fn make_field(
-    text: &mut impl egui::widgets::TextBuffer,
-    hint: impl Into<egui::WidgetText>,
-) -> egui::TextEdit<'_> {
-    egui::TextEdit::singleline(text).hint_text(hint)
-}
-
-fn make_editor(
-    text: &mut impl egui::widgets::TextBuffer,
-    hint: impl Into<egui::WidgetText>,
-) -> egui::TextEdit<'_> {
-    egui::TextEdit::multiline(text)
-        .hint_text(hint)
-        .desired_rows(10)
-        .desired_width(f32::INFINITY)
 }
 
 fn with_pick_file(func: impl FnOnce(path::PathBuf) -> Result<()>) -> Result<()> {

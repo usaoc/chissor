@@ -6,6 +6,12 @@ hover = "Change output setting"
 text = "Language"
 hover = "Change interface language"
 
+[menu.about]
+text = "About"
+hover = "About this program"
+expat = "Expat License"
+ghrepo = "GitHub repository"
+
 [new-dict]
 text = "New…"
 what = "new"

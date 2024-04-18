@@ -155,6 +155,18 @@ impl App {
             })
             .response
             .on_hover_text(t!("menu.lang.hover"));
+            ui.menu_button(t!("menu.about.text"), |ui| {
+                ui.heading(format!(
+                    "{name} v{version}",
+                    name = t!("name", locale = "info"),
+                    version = t!("version", locale = "info")
+                ));
+                ui.label(t!("notice", locale = "info"));
+                ui.hyperlink_to(t!("menu.about.expat"), t!("expat", locale = "info"));
+                ui.hyperlink_to(t!("menu.about.ghrepo"), t!("ghrepo", locale = "info"));
+            })
+            .response
+            .on_hover_text(t!("menu.about.hover"));
         });
     }
 

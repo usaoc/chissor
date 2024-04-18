@@ -6,6 +6,12 @@ hover = "更改输出设置"
 text = "语言"
 hover = "更改界面语言"
 
+[menu.about]
+text = "关于"
+hover = "关于本程序"
+expat = "Expat 协议"
+ghrepo = "GitHub 仓库"
+
 [new-dict]
 text = "新建…"
 what = "新建"

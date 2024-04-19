@@ -328,9 +328,10 @@ impl App {
     }
 
     fn add_word(&mut self) {
-        if !self.can_add_word() {
-            unreachable!("must not trigger this action for empty word")
-        }
+        assert!(
+            self.can_add_word(),
+            "must not trigger this action for empty word",
+        );
         if let Err(err) = self.dicts.add_word(&self.word, &self.freq, &self.tag) {
             self.error_windows.add(&t!("add-word.what"), err);
         }
@@ -441,9 +442,10 @@ impl Dicts {
     }
 
     fn remove_dict(&mut self) {
-        if !self.can_remove_dict() {
-            unreachable!("must not trigger this action for the only dictionary");
-        }
+        assert!(
+            self.can_remove_dict(),
+            "must not trigger this action for the only dictionary",
+        );
         self.dicts.remove(self.idx);
         if self.idx == self.dicts.len() {
             self.idx -= 1;

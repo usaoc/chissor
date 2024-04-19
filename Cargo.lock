@@ -182,12 +182,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "69f7f8c3906b62b754cd5326047894316021dcfe5a194c8ea52bdd94934a3457"
 
 [[package]]
-name = "arrayref"
-version = "0.3.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6b4930d2cb77ce62f89ee5d5289b4ac049559b1c45539271f5ed4fdc7db34545"
-
-[[package]]
 name = "arrayvec"
 version = "0.7.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -724,15 +718,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fd16c4719339c4530435d38e511904438d07cce7950afa3718a84ac36c10e89e"
 
 [[package]]
-name = "cgl"
-version = "0.3.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0ced0551234e87afee12411d535648dd89d2e7f34c78b753395567aff3d447ff"
-dependencies = [
- "libc",
-]
-
-[[package]]
 name = "chissor"
 version = "0.1.1"
 dependencies = [
@@ -1085,9 +1070,6 @@ dependencies = [
  "egui-wgpu",
  "egui-winit",
  "egui_glow",
- "glow",
- "glutin",
- "glutin-winit",
  "image",
  "js-sys",
  "log",
@@ -1095,7 +1077,6 @@ dependencies = [
  "parking_lot",
  "percent-encoding",
  "pollster",
- "raw-window-handle 0.5.2",
  "raw-window-handle 0.6.0",
  "static_assertions",
  "thiserror",
@@ -1561,62 +1542,6 @@ dependencies = [
  "slotmap",
  "wasm-bindgen",
  "web-sys",
-]
-
-[[package]]
-name = "glutin"
-version = "0.31.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "18fcd4ae4e86d991ad1300b8f57166e5be0c95ef1f63f3f5b827f8a164548746"
-dependencies = [
- "bitflags 2.5.0",
- "cfg_aliases",
- "cgl",
- "core-foundation",
- "dispatch",
- "glutin_egl_sys",
- "glutin_glx_sys",
- "glutin_wgl_sys",
- "icrate",
- "libloading 0.8.3",
- "objc2 0.4.1",
- "once_cell",
- "raw-window-handle 0.5.2",
- "wayland-sys",
- "windows-sys 0.48.0",
- "x11-dl",
-]
-
-[[package]]
-name = "glutin-winit"
-version = "0.4.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1ebcdfba24f73b8412c5181e56f092b5eff16671c514ce896b258a0a64bd7735"
-dependencies = [
- "cfg_aliases",
- "glutin",
- "raw-window-handle 0.5.2",
- "winit",
-]
-
-[[package]]
-name = "glutin_egl_sys"
-version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "77cc5623f5309ef433c3dd4ca1223195347fe62c413da8e2fdd0eb76db2d9bcd"
-dependencies = [
- "gl_generator",
- "windows-sys 0.48.0",
-]
-
-[[package]]
-name = "glutin_glx_sys"
-version = "0.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a165fd686c10dcc2d45380b35796e577eacfd43d4660ee741ec8ebe2201b3b4f"
-dependencies = [
- "gl_generator",
- "x11-dl",
 ]
 
 [[package]]
@@ -2093,7 +2018,6 @@ dependencies = [
  "log",
  "ndk-sys",
  "num_enum",
- "raw-window-handle 0.5.2",
  "raw-window-handle 0.6.0",
  "thiserror",
 ]
@@ -2756,19 +2680,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
 
 [[package]]
-name = "sctk-adwaita"
-version = "0.8.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "82b2eaf3a5b264a521b988b2e73042e742df700c4f962cde845d1541adb46550"
-dependencies = [
- "ab_glyph",
- "log",
- "memmap2",
- "smithay-client-toolkit",
- "tiny-skia",
-]
-
-[[package]]
 name = "serde"
 version = "1.0.198"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2964,12 +2875,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 
 [[package]]
-name = "strict-num"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6637bab7722d379c8b41ba849228d680cc12d0a45ba1fa2b48f2a30577a06731"
-
-[[package]]
 name = "strsim"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3036,31 +2941,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.60",
-]
-
-[[package]]
-name = "tiny-skia"
-version = "0.11.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "83d13394d44dae3207b52a326c0c85a8bf87f1541f23b0d143811088497b09ab"
-dependencies = [
- "arrayref",
- "arrayvec",
- "bytemuck",
- "cfg-if",
- "log",
- "tiny-skia-path",
-]
-
-[[package]]
-name = "tiny-skia-path"
-version = "0.11.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9c9e7fc0c2e86a30b117d0462aa261b72b7a99b7ebd7deb3a14ceda95c5bdc93"
-dependencies = [
- "arrayref",
- "bytemuck",
- "strict-num",
 ]
 
 [[package]]
@@ -3919,11 +3799,9 @@ dependencies = [
  "once_cell",
  "orbclient",
  "percent-encoding",
- "raw-window-handle 0.5.2",
  "raw-window-handle 0.6.0",
  "redox_syscall 0.3.5",
  "rustix 0.38.32",
- "sctk-adwaita",
  "smithay-client-toolkit",
  "smol_str",
  "unicode-segmentation",

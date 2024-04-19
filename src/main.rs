@@ -46,6 +46,7 @@ struct App {
     output: String,
     separator: String,
     use_hmm: bool,
+    batch_mode: bool,
     error_windows: ErrorWindows,
 }
 
@@ -137,6 +138,8 @@ impl App {
                 .on_hover_text(t!("separator.hover"));
                 ui.checkbox(&mut self.use_hmm, t!("use-hmm.text"))
                     .on_hover_text(t!("use-hmm.hover"));
+                ui.checkbox(&mut self.batch_mode, t!("batch-mode.text"))
+                    .on_hover_text(t!("batch-mode.hover"));
             })
             .response
             .on_hover_text(t!("menu.output.hover"));
@@ -233,28 +236,30 @@ impl App {
     }
 
     fn show_input_area(&mut self, ui: &mut egui::Ui) {
-        ui.horizontal(|ui| {
-            if ui
-                .button(t!("import.text"))
-                .on_hover_text(t!("import.hover"))
-                .clicked()
-            {
-                self.import();
-            }
-        });
-        ui.separator();
-        egui::ScrollArea::vertical().show(ui, |ui| {
-            ui.add_sized(
-                ui.available_size(),
-                egui::TextEdit::multiline(&mut self.input).hint_text(t!("input.text")),
-            );
+        ui.add_enabled_ui(!self.batch_mode, |ui| {
+            ui.horizontal(|ui| {
+                if ui
+                    .button(t!("import.text"))
+                    .on_hover_text(t!("import.hover"))
+                    .clicked()
+                {
+                    self.import();
+                }
+            });
+            ui.separator();
+            egui::ScrollArea::vertical().show(ui, |ui| {
+                ui.add_sized(
+                    ui.available_size(),
+                    egui::TextEdit::multiline(&mut self.input).hint_text(t!("input.text")),
+                );
+            });
         });
     }
 
     fn show_output_area(&mut self, ui: &mut egui::Ui) {
         ui.horizontal(|ui| {
             if ui
-                .button(t!("export.text"))
+                .add_enabled(!self.batch_mode, egui::Button::new(t!("export.text")))
                 .on_hover_text(t!("export.hover"))
                 .clicked()
             {
@@ -265,36 +270,54 @@ impl App {
                 .on_hover_text(t!("segment.hover"))
                 .clicked()
             {
-                self.segment();
+                if self.batch_mode {
+                    self.segment_batch();
+                } else {
+                    self.segment();
+                }
             }
             if ui
                 .button(t!("segment-granular.text"))
                 .on_hover_text(t!("segment-granular.hover"))
                 .clicked()
             {
-                self.segment_granular();
+                if self.batch_mode {
+                    self.segment_granular_batch();
+                } else {
+                    self.segment_granular();
+                }
             }
             if ui
                 .button(t!("search.text"))
                 .on_hover_text(t!("search.hover"))
                 .clicked()
             {
-                self.search();
+                if self.batch_mode {
+                    self.search_batch();
+                } else {
+                    self.search();
+                }
             }
             if ui
                 .button(t!("tag.text"))
                 .on_hover_text(t!("tag.hover"))
                 .clicked()
             {
-                self.tag();
+                if self.batch_mode {
+                    self.tag_batch();
+                } else {
+                    self.tag();
+                }
             }
         });
-        ui.separator();
-        egui::ScrollArea::vertical().show(ui, |ui| {
-            ui.add_sized(
-                ui.available_size(),
-                egui::TextEdit::multiline(&mut &*self.output).hint_text(t!("output.text")),
-            );
+        ui.add_enabled_ui(!self.batch_mode, |ui| {
+            ui.separator();
+            egui::ScrollArea::vertical().show(ui, |ui| {
+                ui.add_sized(
+                    ui.available_size(),
+                    egui::TextEdit::multiline(&mut &*self.output).hint_text(t!("output.text")),
+                );
+            });
         });
     }
 
@@ -357,38 +380,74 @@ impl App {
     }
 
     fn segment(&mut self) {
-        self.output = self
-            .dicts
-            .selected()
-            .cut(&self.input, self.use_hmm)
-            .join(self.get_separator());
+        self.output = self.segment_one(&self.input);
     }
 
     fn segment_granular(&mut self) {
-        self.output = self
-            .dicts
-            .selected()
-            .cut_for_search(&self.input, self.use_hmm)
-            .join(self.get_separator());
+        self.output = self.segment_granular_one(&self.input);
     }
 
     fn search(&mut self) {
-        self.output = self
-            .dicts
-            .selected()
-            .cut_all(&self.input)
-            .join(self.get_separator());
+        self.output = self.search_one(&self.input);
     }
 
     fn tag(&mut self) {
-        self.output = self
-            .dicts
+        self.output = self.tag_one(&self.input);
+    }
+
+    fn segment_batch(&mut self) {
+        if let Err(err) = with_out_files(|input| self.segment_one(&input)) {
+            self.error_windows.add(&t!("segment.what"), err);
+        }
+    }
+
+    fn segment_granular_batch(&mut self) {
+        if let Err(err) = with_out_files(|input| self.segment_granular_one(&input)) {
+            self.error_windows.add(&t!("segment-granular.what"), err);
+        }
+    }
+
+    fn search_batch(&mut self) {
+        if let Err(err) = with_out_files(|input| self.search_one(&input)) {
+            self.error_windows.add(&t!("search.what"), err);
+        }
+    }
+
+    fn tag_batch(&mut self) {
+        if let Err(err) = with_out_files(|input| self.tag_one(&input)) {
+            self.error_windows.add(&t!("tag.what"), err);
+        }
+    }
+
+    fn segment_one(&self, input: &str) -> String {
+        self.dicts
             .selected()
-            .tag(&self.input, self.use_hmm)
+            .cut(input, self.use_hmm)
+            .join(self.get_separator())
+    }
+
+    fn segment_granular_one(&self, input: &str) -> String {
+        self.dicts
+            .selected()
+            .cut_for_search(input, self.use_hmm)
+            .join(self.get_separator())
+    }
+
+    fn search_one(&self, input: &str) -> String {
+        self.dicts
+            .selected()
+            .cut_all(input)
+            .join(self.get_separator())
+    }
+
+    fn tag_one(&self, input: &str) -> String {
+        self.dicts
+            .selected()
+            .tag(input, self.use_hmm)
             .into_iter()
             .map(|jieba::Tag { word, tag }| format!("{word} {tag}"))
             .collect::<Vec<_>>()
-            .join(self.get_separator());
+            .join(self.get_separator())
     }
 
     fn get_separator(&self) -> &str {
@@ -422,7 +481,7 @@ impl Dicts {
     }
 
     fn load_dict(&mut self, dict: &mut impl io::BufRead) -> Result<()> {
-        self.selected().load_dict(dict)?;
+        self.selected_mut().load_dict(dict)?;
         Ok(())
     }
 
@@ -433,7 +492,7 @@ impl Dicts {
             Some(freq.parse()?)
         };
         let tag = if tag.is_empty() { None } else { Some(tag) };
-        self.selected().add_word(word, freq, tag);
+        self.selected_mut().add_word(word, freq, tag);
         Ok(())
     }
 
@@ -458,7 +517,15 @@ impl Dicts {
         }
     }
 
-    fn selected(&mut self) -> &mut jieba::Jieba {
+    fn selected(&self) -> &jieba::Jieba {
+        &self
+            .dicts
+            .get(self.idx)
+            .expect("cannot be `None`; must have maintained the invariants")
+            .jieba
+    }
+
+    fn selected_mut(&mut self) -> &mut jieba::Jieba {
         &mut self
             .dicts
             .get_mut(self.idx)
@@ -539,6 +606,26 @@ fn with_save_file(func: impl FnOnce(path::PathBuf) -> Result<()>) -> Result<()> 
         Some(path) => func(path),
         None => Ok(()),
     }
+}
+
+fn with_out_files(func: impl Fn(String) -> String) -> Result<()> {
+    let Some(in_paths) = rfd::FileDialog::new().pick_files() else {
+        return Ok(());
+    };
+    let Some(save_path) = rfd::FileDialog::new().pick_folder() else {
+        return Ok(());
+    };
+    for in_path in in_paths {
+        let out_path = save_path.join(
+            in_path
+                .file_name()
+                .expect("cannot be `None`; must be a regular file"),
+        );
+        let input = String::from(fs::read_to_string(in_path)?.trim());
+        let mut out_file = fs::File::create_new(out_path)?;
+        writeln!(&mut out_file, "{out}", out = func(input))?;
+    }
+    Ok(())
 }
 
 #[cfg(test)]

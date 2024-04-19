@@ -60,20 +60,24 @@ hover = "向文件导出输出结果"
 
 [segment]
 text = "分词"
+what = "分词"
 hover = "将输入文本分词"
 
 [segment-granular]
 text = "分词（细粒度）"
+what = "分词"
 hover = "以更细的粒度将输入文本分词"
 
 [search]
 text = "搜索"
+what = "搜索"
 hover = """
 在输入文本中搜索所有可能的词语
 并不使用隐 Markov 模型"""
 
 [tag]
 text = "标注"
+what = "标注"
 hover = "将输入文本标注"
 
 [separator]
@@ -85,6 +89,12 @@ hover = """
 [use-hmm]
 text = "隐 Markov 模型"
 hover = "在进行某些操作时使用隐 Markov 模型"
+
+[batch-mode]
+text = "批量模式"
+hover = """
+使用批量模式而非交互模式
+输出结果将保存在所选择的文件夹里"""
 
 [output]
 text = "输出结果"

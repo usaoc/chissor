@@ -60,20 +60,24 @@ hover = "Export output result to file"
 
 [segment]
 text = "Segment"
+what = "segment"
 hover = "Segment input text"
 
 [segment-granular]
 text = "Segment (granular)"
+what = "segment"
 hover = "Segment input text with a smaller granularity"
 
 [search]
 text = "Search"
+what = "search"
 hover = """
 Search input text for all possible words
 Does not use Hidden Markov model"""
 
 [tag]
 text = "Tag"
+what = "tag"
 hover = "Tag input text"
 
 [separator]
@@ -85,6 +89,12 @@ Default to newline if empty"""
 [use-hmm]
 text = "Hidden Markov model"
 hover = "Use Hidden Markov model for some operations"
+
+[batch-mode]
+text = "Batch mode"
+hover = """
+Use batch mode instead of interactive mode
+Output results are saved under a selected folder"""
 
 [output]
 text = "Output result"

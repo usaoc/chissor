@@ -60,20 +60,24 @@ hover = "向文件導出輸出結果"
 
 [segment]
 text = "分詞"
+what = "分詞"
 hover = "將輸入文本分詞"
 
 [segment-granular]
 text = "分詞（細粒度）"
+what = "分詞"
 hover = "以更細的粒度將輸入文本分詞"
 
 [search]
 text = "搜索"
+what = "搜索"
 hover = """
 在輸入文本中搜索所有可能的詞語
 並不使用隱 Markov 模型"""
 
 [tag]
 text = "標註"
+what = "標註"
 hover = "將輸入文本標註"
 
 [separator]
@@ -85,6 +89,12 @@ hover = """
 [use-hmm]
 text = "隱 Markov 模型"
 hover = "在進行某些操作時使用隱 Markov 模型"
+
+[batch-mode]
+text = "批量模式"
+hover = """
+使用批量模式而非交互模式
+輸出結果將保存在所選擇的文件夾裏"""
 
 [output]
 text = "輸出結果"

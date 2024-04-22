@@ -85,7 +85,7 @@ struct ErrorWindows {
 struct ErrorWindow {
     id: egui::Id,
     open: bool,
-    title: String,
+    what: String,
     content: String,
 }
 
@@ -337,7 +337,7 @@ impl App {
             self.dicts.new_dict(name, &mut io::BufReader::new(file))?;
             Ok(())
         }) {
-            self.error_windows.add(&t!("new-dict.what"), err);
+            self.error_windows.add("new-dict.what", err);
         }
     }
 
@@ -347,7 +347,7 @@ impl App {
             self.dicts.load_dict(&mut io::BufReader::new(file))?;
             Ok(())
         }) {
-            self.error_windows.add(&t!("load-dict.what"), err);
+            self.error_windows.add("load-dict.what", err);
         }
     }
 
@@ -361,7 +361,7 @@ impl App {
             "must not trigger this action for empty word",
         );
         if let Err(err) = self.dicts.add_word(&self.word, &self.freq, &self.tag) {
-            self.error_windows.add(&t!("add-word.what"), err);
+            self.error_windows.add("add-word.what", err);
         }
     }
 
@@ -370,7 +370,7 @@ impl App {
             self.input = String::from(fs::read_to_string(path)?.trim());
             Ok(())
         }) {
-            self.error_windows.add(&t!("import.what"), err);
+            self.error_windows.add("import.what", err);
         }
     }
 
@@ -380,7 +380,7 @@ impl App {
             writeln!(&mut buf, "{output}", output = self.output)?;
             Ok(())
         }) {
-            self.error_windows.add(&t!("export.what"), err);
+            self.error_windows.add("export.what", err);
         }
     }
 
@@ -402,25 +402,25 @@ impl App {
 
     fn segment_batch(&mut self) {
         if let Err(err) = with_out_files(|input| self.segment_one(&input)) {
-            self.error_windows.add(&t!("segment.what"), err);
+            self.error_windows.add("segment.what", err);
         }
     }
 
     fn segment_granular_batch(&mut self) {
         if let Err(err) = with_out_files(|input| self.segment_granular_one(&input)) {
-            self.error_windows.add(&t!("segment-granular.what"), err);
+            self.error_windows.add("segment-granular.what", err);
         }
     }
 
     fn search_batch(&mut self) {
         if let Err(err) = with_out_files(|input| self.search_one(&input)) {
-            self.error_windows.add(&t!("search.what"), err);
+            self.error_windows.add("search.what", err);
         }
     }
 
     fn tag_batch(&mut self) {
         if let Err(err) = with_out_files(|input| self.tag_one(&input)) {
-            self.error_windows.add(&t!("tag.what"), err);
+            self.error_windows.add("tag.what", err);
         }
     }
 
@@ -554,7 +554,7 @@ impl ErrorWindows {
         self.windows.push(ErrorWindow {
             id: egui::Id::new(self.count),
             open: true,
-            title: String::from(t!("error-window.title", what = what)),
+            what: String::from(what),
             content: err.to_string(),
         });
         self.count += 1;
@@ -574,7 +574,7 @@ impl ErrorWindows {
 
 impl ErrorWindow {
     fn show(&mut self, ctx: &egui::Context) {
-        egui::Window::new(&self.title)
+        egui::Window::new(t!("error-window.title", what = t!(&self.what)))
             .id(egui::Id::new(self.id))
             .resizable(false)
             .collapsible(false)

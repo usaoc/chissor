@@ -1,5 +1,5 @@
 name = "Chissor"
-version = "0.1.1"
+version = "0.2.0"
 notice = "© 2024 Wing Hei Chan"
 expat = "https://spdx.org/licenses/MIT.html"
 ghrepo = "https://github.com/usaoc/chissor"

@@ -67,8 +67,13 @@ struct Dicts {
 }
 
 struct Dict {
-    name: String,
+    name: DictName,
     jieba: jieba::Jieba,
+}
+
+enum DictName {
+    Embedded(String),
+    File(String),
 }
 
 #[derive(Default)]
@@ -96,9 +101,9 @@ impl Default for Dicts {
         Dicts {
             idx: 0,
             dicts: vec![
-                make_dict_static("Default", include_bytes!("../dicts/dict.txt")),
-                make_dict_static("Default (small)", include_bytes!("../dicts/dict.txt.small")),
-                make_dict_static("Default (big)", include_bytes!("../dicts/dict.txt.big")),
+                make_dict_static("dict.name", include_bytes!("../dicts/dict.txt")),
+                make_dict_static("dict.small.name", include_bytes!("../dicts/dict.txt.small")),
+                make_dict_static("dict.big.name", include_bytes!("../dicts/dict.txt.big")),
             ],
         }
     }
@@ -474,7 +479,7 @@ impl Dicts {
     fn new_dict(&mut self, name: impl Into<String>, dict: &mut impl io::BufRead) -> Result<()> {
         let jieba = jieba::Jieba::with_dict(dict)?;
         self.dicts.push(Dict {
-            name: name.into(),
+            name: DictName::File(name.into()),
             jieba,
         });
         Ok(())
@@ -534,6 +539,15 @@ impl Dicts {
     }
 }
 
+impl From<&DictName> for egui::WidgetText {
+    fn from(val: &DictName) -> Self {
+        match val {
+            DictName::Embedded(key) => t!(key).into(),
+            DictName::File(name) => name.into(),
+        }
+    }
+}
+
 impl ErrorWindows {
     #[allow(clippy::needless_pass_by_value)]
     fn add(&mut self, what: &str, err: Box<dyn error::Error>) {
@@ -586,9 +600,9 @@ fn make_cjk_font_defs() -> egui::FontDefinitions {
     fonts
 }
 
-fn make_dict_static(name: &'static str, bytes: &'static [u8]) -> Dict {
+fn make_dict_static(key: &'static str, bytes: &'static [u8]) -> Dict {
     Dict {
-        name: String::from(name),
+        name: DictName::Embedded(String::from(key)),
         jieba: jieba::Jieba::with_dict(&mut io::BufReader::new(bytes))
             .expect("cannot be `Err(_)`; must have provided a valid static dict"),
     }

@@ -101,3 +101,12 @@ text = "Output result"
 
 [error-window]
 title = "Error (%{what})"
+
+[dict]
+name = "Default"
+
+[dict.small]
+name = "Default (small)"
+
+[dict.big]
+name = "Default (big)"

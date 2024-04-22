@@ -101,3 +101,12 @@ text = "输出结果"
 
 [error-window]
 title = "错误（%{what}）"
+
+[dict]
+name = "默认"
+
+[dict.small]
+name = "默认（小）"
+
+[dict.big]
+name = "默认（大）"

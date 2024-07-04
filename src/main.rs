@@ -25,9 +25,11 @@ fn main() {
         default_theme: eframe::Theme::Light,
         ..Default::default()
     };
-    if let Err(err) =
-        eframe::run_native(WINDOW_TITLE, options, Box::new(|cc| Box::new(App::new(cc))))
-    {
+    if let Err(err) = eframe::run_native(
+        WINDOW_TITLE,
+        options,
+        Box::new(|cc| Ok(Box::new(App::new(cc)))),
+    ) {
         eprintln!("Initialization failed: {err}");
         process::exit(1);
     }

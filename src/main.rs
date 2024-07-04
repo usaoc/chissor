@@ -12,7 +12,7 @@ program.  If not, see <https://spdx.org/licenses/MIT.html>.  */
 #![warn(clippy::pedantic)]
 use eframe::egui;
 use rust_i18n::t;
-use std::io::Write;
+use std::io::Write as _;
 use std::{error, fs, io, path, process, result};
 use {jieba_rs as jieba, rust_i18n as i18n};
 

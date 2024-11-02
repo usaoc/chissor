@@ -22,7 +22,6 @@ const WINDOW_TITLE: &str = "Chissor";
 fn main() {
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default().with_maximized(true),
-        default_theme: eframe::Theme::Light,
         ..Default::default()
     };
     if let Err(err) = eframe::run_native(
@@ -100,6 +99,9 @@ struct ErrorWindow {
 impl App {
     fn new(cc: &eframe::CreationContext) -> Self {
         cc.egui_ctx.set_fonts(make_cjk_font_defs());
+        cc.egui_ctx.options_mut(|opt| {
+            opt.fallback_theme = egui::Theme::Light;
+        });
         Self::default()
     }
 }

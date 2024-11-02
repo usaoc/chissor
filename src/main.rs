@@ -403,25 +403,25 @@ impl App {
     }
 
     fn segment_batch(&mut self) {
-        if let Err(err) = with_out_files(|input| self.segment_one(&input)) {
+        if let Err(err) = with_out_files(|input| self.segment_one(input)) {
             self.error_windows.add("segment.what", err);
         }
     }
 
     fn segment_granular_batch(&mut self) {
-        if let Err(err) = with_out_files(|input| self.segment_granular_one(&input)) {
+        if let Err(err) = with_out_files(|input| self.segment_granular_one(input)) {
             self.error_windows.add("segment-granular.what", err);
         }
     }
 
     fn search_batch(&mut self) {
-        if let Err(err) = with_out_files(|input| self.search_one(&input)) {
+        if let Err(err) = with_out_files(|input| self.search_one(input)) {
             self.error_windows.add("search.what", err);
         }
     }
 
     fn tag_batch(&mut self) {
-        if let Err(err) = with_out_files(|input| self.tag_one(&input)) {
+        if let Err(err) = with_out_files(|input| self.tag_one(input)) {
             self.error_windows.add("tag.what", err);
         }
     }
@@ -624,7 +624,7 @@ fn with_save_file(func: impl FnOnce(path::PathBuf) -> Result<()>) -> Result<()> 
     }
 }
 
-fn with_out_files(func: impl Fn(String) -> String) -> Result<()> {
+fn with_out_files(mut func: impl FnMut(&str) -> String) -> Result<()> {
     let Some(in_paths) = rfd::FileDialog::new().pick_files() else {
         return Ok(());
     };
@@ -637,7 +637,8 @@ fn with_out_files(func: impl Fn(String) -> String) -> Result<()> {
                 .file_name()
                 .expect("cannot be `None`; must be a regular file"),
         );
-        let input = String::from(fs::read_to_string(in_path)?.trim());
+        let input = fs::read_to_string(in_path)?;
+        let input = input.trim();
         let mut out_file = fs::File::create_new(out_path)?;
         writeln!(&mut out_file, "{out}", out = func(input))?;
     }
@@ -694,7 +695,7 @@ mod tests {
             assert!(!dicts.dicts.is_empty());
         }
 
-        fn with_dict<T>(strs: Vec<&str>, func: impl FnOnce(&mut io::BufReader<&[u8]>) -> T) -> T {
+        fn with_dict<T>(strs: &[&str], func: impl FnOnce(&mut io::BufReader<&[u8]>) -> T) -> T {
             let mut str = strs.join("\n");
             str.push('\n');
             func(&mut io::BufReader::new(str.as_bytes()))
@@ -703,12 +704,12 @@ mod tests {
         let mut dicts = Dicts::default();
         check_invariant(&dicts);
 
-        assert!(with_dict(vec!["甲", "乙 20", "丙 40 m"], |buf| {
+        assert!(with_dict(&["甲", "乙 20", "丙 40 m"], |buf| {
             dicts.new_dict("example", buf).is_ok()
         }));
         check_invariant(&dicts);
 
-        assert!(with_dict(vec!["天", "地 20", "人 40 m"], |buf| {
+        assert!(with_dict(&["天", "地 20", "人 40 m"], |buf| {
             dicts.load_dict(buf).is_ok()
         }));
 

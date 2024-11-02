@@ -74,8 +74,14 @@ struct Dict {
 }
 
 enum DictName {
-    Embedded(String),
+    Embedded(Embedded),
     File(String),
+}
+
+enum Embedded {
+    Normal,
+    Small,
+    Big,
 }
 
 #[derive(Default)]
@@ -103,9 +109,9 @@ impl Default for Dicts {
         Dicts {
             idx: 0,
             dicts: vec![
-                make_dict_static("dict.name", include_bytes!("../dicts/dict.txt")),
-                make_dict_static("dict.small.name", include_bytes!("../dicts/dict.txt.small")),
-                make_dict_static("dict.big.name", include_bytes!("../dicts/dict.txt.big")),
+                make_dict_static(Embedded::Normal, include_bytes!("../dicts/dict.txt")),
+                make_dict_static(Embedded::Small, include_bytes!("../dicts/dict.txt.small")),
+                make_dict_static(Embedded::Big, include_bytes!("../dicts/dict.txt.big")),
             ],
         }
     }
@@ -544,9 +550,20 @@ impl Dicts {
 impl From<&DictName> for egui::WidgetText {
     fn from(val: &DictName) -> Self {
         match val {
-            DictName::Embedded(key) => t!(key).into(),
+            DictName::Embedded(kind) => kind.into(),
             DictName::File(name) => name.into(),
         }
+    }
+}
+
+impl From<&Embedded> for egui::WidgetText {
+    fn from(val: &Embedded) -> Self {
+        let name = match val {
+            Embedded::Normal => t!("dict.name"),
+            Embedded::Small => t!("dict.small.name"),
+            Embedded::Big => t!("dict.big.name"),
+        };
+        name.into()
     }
 }
 
@@ -602,9 +619,9 @@ fn make_cjk_font_defs() -> egui::FontDefinitions {
     fonts
 }
 
-fn make_dict_static(key: &'static str, bytes: &'static [u8]) -> Dict {
+fn make_dict_static(kind: Embedded, bytes: &'static [u8]) -> Dict {
     Dict {
-        name: DictName::Embedded(String::from(key)),
+        name: DictName::Embedded(kind),
         jieba: jieba::Jieba::with_dict(&mut io::BufReader::new(bytes))
             .expect("cannot be `Err(_)`; must have provided a valid static dict"),
     }

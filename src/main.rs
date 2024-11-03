@@ -20,10 +20,7 @@ i18n::i18n!("locales");
 
 const WINDOW_TITLE: &str = "Chissor";
 fn main() {
-    let options = eframe::NativeOptions {
-        viewport: egui::ViewportBuilder::default().with_maximized(true),
-        ..Default::default()
-    };
+    let options = eframe::NativeOptions::default();
     if let Err(err) = eframe::run_native(
         WINDOW_TITLE,
         options,

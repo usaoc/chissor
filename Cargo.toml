@@ -13,7 +13,7 @@ lto = true
 panic = "abort"
 
 [dependencies]
-eframe = { version = "0.29", default-features = false, features = [
+eframe = { version = "0.30", default-features = false, features = [
   "accesskit",
   "wayland",
   "wgpu",

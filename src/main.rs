@@ -13,7 +13,7 @@ program.  If not, see <https://spdx.org/licenses/MIT.html>.  */
 use eframe::egui;
 use rust_i18n::t;
 use std::io::Write as _;
-use std::{error, fs, io, path, process, result};
+use std::{error, fs, io, path, process, result, sync};
 use {jieba_rs as jieba, rust_i18n as i18n};
 
 i18n::i18n!("locales");
@@ -608,7 +608,9 @@ fn make_cjk_font_defs() -> egui::FontDefinitions {
     let mut fonts = egui::FontDefinitions::empty();
     fonts.font_data.insert(
         String::from(FONT_NAME),
-        egui::FontData::from_static(include_bytes!("../fonts/NotoSansCJKsc-Regular.otf")),
+        sync::Arc::new(egui::FontData::from_static(include_bytes!(
+            "../fonts/NotoSansCJKsc-Regular.otf"
+        ))),
     );
     fonts
         .families

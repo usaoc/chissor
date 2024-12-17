@@ -48,6 +48,7 @@ struct App {
     error_windows: ErrorWindows,
 }
 
+const LOCALES: [Locale; 3] = [Locale::En, Locale::ZhCn, Locale::ZhHk];
 #[derive(Default, PartialEq)]
 enum Locale {
     #[default]
@@ -140,6 +141,11 @@ impl eframe::App for App {
     }
 }
 
+const PROGRAM_NAME: &str = "Chissor";
+const PROGRAM_VERSION: &str = "v0.2.0";
+const COPYRIGHT_NOTICE: &str = "© 2024 Wing Hei Chan";
+const EXPAT_LINK: &str = "https://spdx.org/licenses/MIT.html";
+const GHREPO_LINK: &str = "https://github.com/usaoc/chissor";
 impl App {
     fn show_menu_area(&mut self, ui: &mut egui::Ui) {
         ui.horizontal(|ui| {
@@ -156,8 +162,8 @@ impl App {
             .response
             .on_hover_text(t!("menu.output.hover"));
             ui.menu_button(t!("menu.lang.text"), |ui| {
-                for locale in [Locale::En, Locale::ZhCn, Locale::ZhHk] {
-                    let text = t!(locale.to_locale(), locale = "lang");
+                for locale in LOCALES {
+                    let text = locale.to_name();
                     if ui
                         .selectable_value(&mut self.locale, locale, text)
                         .clicked()
@@ -171,14 +177,13 @@ impl App {
             .response
             .on_hover_text(t!("menu.lang.hover"));
             ui.menu_button(t!("menu.about.text"), |ui| {
-                ui.heading(format!(
-                    "{name} v{version}",
-                    name = t!("name", locale = "info"),
-                    version = t!("version", locale = "info")
-                ));
-                ui.label(t!("notice", locale = "info"));
-                ui.hyperlink_to(t!("menu.about.expat"), t!("expat", locale = "info"));
-                ui.hyperlink_to(t!("menu.about.ghrepo"), t!("ghrepo", locale = "info"));
+                ui.horizontal(|ui| {
+                    ui.heading(PROGRAM_NAME);
+                    ui.label(PROGRAM_VERSION);
+                });
+                ui.label(COPYRIGHT_NOTICE);
+                ui.hyperlink_to(t!("menu.about.expat"), EXPAT_LINK);
+                ui.hyperlink_to(t!("menu.about.ghrepo"), GHREPO_LINK);
             })
             .response
             .on_hover_text(t!("menu.about.hover"));
@@ -478,6 +483,14 @@ impl Locale {
             Locale::En => "en",
             Locale::ZhCn => "zh-CN",
             Locale::ZhHk => "zh-HK",
+        }
+    }
+
+    fn to_name(&self) -> &'static str {
+        match self {
+            Locale::En => "English",
+            Locale::ZhCn => "中文（简体）",
+            Locale::ZhHk => "中文（繁體）",
         }
     }
 }

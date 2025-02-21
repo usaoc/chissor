@@ -6,6 +6,10 @@ hover = "更改輸出設置"
 text = "語言"
 hover = "更改界面語言"
 
+[menu.theme]
+text = "主題"
+hover = "更改界面主題"
+
 [menu.about]
 text = "關於"
 hover = "關於本程序"
@@ -110,3 +114,12 @@ name = "默認（小）"
 
 [dict.big]
 name = "默認（大）"
+
+[theme.system]
+name = "系統"
+
+[theme.light]
+name = "明亮"
+
+[theme.dark]
+name = "黑暗"

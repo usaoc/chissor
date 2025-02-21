@@ -57,6 +57,15 @@ enum Locale {
     ZhHk,
 }
 
+const THEMES: [Theme; 3] = [Theme::System, Theme::Light, Theme::Dark];
+#[derive(Default, PartialEq)]
+enum Theme {
+    #[default]
+    System,
+    Light,
+    Dark,
+}
+
 // Invariants:
 //  - `idx` must be between `0..dicts.len()`;
 //  - `dicts` must be nonempty.
@@ -98,6 +107,7 @@ impl App {
     fn new(cc: &eframe::CreationContext) -> Self {
         cc.egui_ctx.set_fonts(make_cjk_font_defs());
         cc.egui_ctx.options_mut(|opt| {
+            opt.theme_preference = (&Theme::default()).into();
             opt.fallback_theme = egui::Theme::Light;
         });
         Self::default()
@@ -176,6 +186,23 @@ impl App {
             })
             .response
             .on_hover_text(t!("menu.lang.hover"));
+            ui.menu_button(t!("menu.theme.text"), |ui| {
+                for theme in THEMES {
+                    let mut current_preference = ui.ctx().options(|opt| opt.theme_preference);
+                    let preference = (&theme).into();
+                    let text = theme.to_name();
+                    if ui
+                        .selectable_value(&mut current_preference, preference, text)
+                        .clicked()
+                    {
+                        ui.ctx().set_theme(preference);
+                        ui.close_menu();
+                        break;
+                    }
+                }
+            })
+            .response
+            .on_hover_text(t!("menu.theme.hover"));
             ui.menu_button(t!("menu.about.text"), |ui| {
                 ui.horizontal(|ui| {
                     ui.heading(PROGRAM_NAME);
@@ -473,6 +500,26 @@ impl App {
             "\n"
         } else {
             sep
+        }
+    }
+}
+
+impl From<&Theme> for egui::ThemePreference {
+    fn from(val: &Theme) -> Self {
+        match val {
+            Theme::System => Self::System,
+            Theme::Light => Self::Light,
+            Theme::Dark => Self::Dark,
+        }
+    }
+}
+
+impl Theme {
+    fn to_name(&self) -> impl Into<egui::WidgetText> {
+        match self {
+            Theme::System => t!("theme.system.name"),
+            Theme::Light => t!("theme.light.name"),
+            Theme::Dark => t!("theme.dark.name"),
         }
     }
 }

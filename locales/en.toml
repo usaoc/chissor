@@ -6,6 +6,10 @@ hover = "Change output setting"
 text = "Language"
 hover = "Change interface language"
 
+[menu.theme]
+text = "Theme"
+hover = "Change interface theme"
+
 [menu.about]
 text = "About"
 hover = "About this program"
@@ -110,3 +114,12 @@ name = "Default (small)"
 
 [dict.big]
 name = "Default (big)"
+
+[theme.system]
+name = "System"
+
+[theme.light]
+name = "Light"
+
+[theme.dark]
+name = "Dark"

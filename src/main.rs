@@ -480,17 +480,17 @@ impl App {
 impl Locale {
     fn to_locale(&self) -> &'static str {
         match self {
-            Locale::En => "en",
-            Locale::ZhCn => "zh-CN",
-            Locale::ZhHk => "zh-HK",
+            Self::En => "en",
+            Self::ZhCn => "zh-CN",
+            Self::ZhHk => "zh-HK",
         }
     }
 
     fn to_name(&self) -> &'static str {
         match self {
-            Locale::En => "English",
-            Locale::ZhCn => "中文（简体）",
-            Locale::ZhHk => "中文（繁體）",
+            Self::En => "English",
+            Self::ZhCn => "中文（简体）",
+            Self::ZhHk => "中文（繁體）",
         }
     }
 }

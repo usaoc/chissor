@@ -49,7 +49,7 @@ struct App {
 }
 
 const LOCALES: [Locale; 3] = [Locale::En, Locale::ZhCn, Locale::ZhHk];
-#[derive(Default, PartialEq)]
+#[derive(Default, Copy, Clone, PartialEq)]
 enum Locale {
     #[default]
     En,
@@ -58,7 +58,7 @@ enum Locale {
 }
 
 const THEMES: [Theme; 3] = [Theme::System, Theme::Light, Theme::Dark];
-#[derive(Default, PartialEq)]
+#[derive(Default, Copy, Clone, PartialEq)]
 enum Theme {
     #[default]
     System,
@@ -84,6 +84,7 @@ enum DictName {
     File(String),
 }
 
+#[derive(Copy, Clone)]
 enum Embedded {
     Normal,
     Small,
@@ -107,7 +108,7 @@ impl App {
     fn new(cc: &eframe::CreationContext) -> Self {
         cc.egui_ctx.set_fonts(make_cjk_font_defs());
         cc.egui_ctx.options_mut(|opt| {
-            opt.theme_preference = (&Theme::default()).into();
+            opt.theme_preference = Theme::default().into();
             opt.fallback_theme = egui::Theme::Light;
         });
         Self::default()
@@ -189,7 +190,7 @@ impl App {
             ui.menu_button(t!("menu.theme.text"), |ui| {
                 let mut current_preference = ui.ctx().options(|opt| opt.theme_preference);
                 for theme in THEMES {
-                    let preference = (&theme).into();
+                    let preference = theme.into();
                     let text = theme.to_name();
                     if ui
                         .selectable_value(&mut current_preference, preference, text)
@@ -504,8 +505,8 @@ impl App {
     }
 }
 
-impl From<&Theme> for egui::ThemePreference {
-    fn from(val: &Theme) -> Self {
+impl From<Theme> for egui::ThemePreference {
+    fn from(val: Theme) -> Self {
         match val {
             Theme::System => Self::System,
             Theme::Light => Self::Light,
@@ -616,7 +617,7 @@ impl From<&DictName> for egui::WidgetText {
 }
 
 impl Embedded {
-    fn to_name(&self) -> impl Into<egui::WidgetText> {
+    fn to_name(self) -> impl Into<egui::WidgetText> {
         match self {
             Embedded::Normal => t!("dict.name"),
             Embedded::Small => t!("dict.small.name"),

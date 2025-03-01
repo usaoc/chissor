@@ -609,20 +609,19 @@ impl Dicts {
 impl From<&DictName> for egui::WidgetText {
     fn from(val: &DictName) -> Self {
         match val {
-            DictName::Embedded(kind) => kind.into(),
+            DictName::Embedded(kind) => kind.to_name().into(),
             DictName::File(name) => name.into(),
         }
     }
 }
 
-impl From<&Embedded> for egui::WidgetText {
-    fn from(val: &Embedded) -> Self {
-        let name = match val {
+impl Embedded {
+    fn to_name(&self) -> impl Into<egui::WidgetText> {
+        match self {
             Embedded::Normal => t!("dict.name"),
             Embedded::Small => t!("dict.small.name"),
             Embedded::Big => t!("dict.big.name"),
-        };
-        name.into()
+        }
     }
 }
 

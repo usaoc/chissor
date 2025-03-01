@@ -812,9 +812,9 @@ mod tests {
         error_windows.add("example", Box::from("one"));
         error_windows.add("example", Box::from("two"));
         error_windows.add("example", Box::from("three"));
-        (&mut error_windows.windows).into_iter().for_each(|win| {
+        for win in &mut error_windows.windows {
             win.open = false;
-        });
+        }
         error_windows.cleanup();
         assert!(error_windows.windows.is_empty());
     }

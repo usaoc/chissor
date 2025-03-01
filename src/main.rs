@@ -187,8 +187,8 @@ impl App {
             .response
             .on_hover_text(t!("menu.lang.hover"));
             ui.menu_button(t!("menu.theme.text"), |ui| {
+                let mut current_preference = ui.ctx().options(|opt| opt.theme_preference);
                 for theme in THEMES {
-                    let mut current_preference = ui.ctx().options(|opt| opt.theme_preference);
                     let preference = (&theme).into();
                     let text = theme.to_name();
                     if ui

@@ -516,7 +516,7 @@ impl From<Theme> for egui::ThemePreference {
 }
 
 impl Theme {
-    fn to_name(&self) -> impl Into<egui::WidgetText> {
+    fn to_name(self) -> impl Into<egui::WidgetText> {
         match self {
             Theme::System => t!("theme.system.name"),
             Theme::Light => t!("theme.light.name"),
@@ -526,7 +526,7 @@ impl Theme {
 }
 
 impl Locale {
-    fn to_locale(&self) -> &'static str {
+    fn to_locale(self) -> &'static str {
         match self {
             Self::En => "en",
             Self::ZhCn => "zh-CN",
@@ -534,7 +534,7 @@ impl Locale {
         }
     }
 
-    fn to_name(&self) -> &'static str {
+    fn to_name(self) -> &'static str {
         match self {
             Self::En => "English",
             Self::ZhCn => "中文（简体）",

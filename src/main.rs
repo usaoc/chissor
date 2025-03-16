@@ -518,9 +518,9 @@ impl From<Theme> for egui::ThemePreference {
 impl Theme {
     fn to_name(self) -> impl Into<egui::WidgetText> {
         match self {
-            Theme::System => t!("theme.system.name"),
-            Theme::Light => t!("theme.light.name"),
-            Theme::Dark => t!("theme.dark.name"),
+            Self::System => t!("theme.system.name"),
+            Self::Light => t!("theme.light.name"),
+            Self::Dark => t!("theme.dark.name"),
         }
     }
 }
@@ -619,9 +619,9 @@ impl From<&DictName> for egui::WidgetText {
 impl Embedded {
     fn to_name(self) -> impl Into<egui::WidgetText> {
         match self {
-            Embedded::Normal => t!("dict.name"),
-            Embedded::Small => t!("dict.small.name"),
-            Embedded::Big => t!("dict.big.name"),
+            Self::Normal => t!("dict.name"),
+            Self::Small => t!("dict.small.name"),
+            Self::Big => t!("dict.big.name"),
         }
     }
 }

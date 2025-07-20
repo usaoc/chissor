@@ -180,7 +180,6 @@ impl App {
                         .clicked()
                     {
                         i18n::set_locale(self.locale.to_locale());
-                        ui.close_menu();
                         break;
                     }
                 }
@@ -197,7 +196,6 @@ impl App {
                         .clicked()
                     {
                         ui.ctx().set_theme(preference);
-                        ui.close_menu();
                         break;
                     }
                 }

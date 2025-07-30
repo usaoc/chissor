@@ -23,7 +23,7 @@ eframe = { version = "0.32", default-features = false, features = [
 wgpu = { version = "25", default-features = true }
 rfd = "0.15"
 rust-i18n = "3.1"
-jieba-rs = { version = "0.7", default-features = false }
+jieba-rs = { version = "0.8", default-features = false }
 
 [package.metadata.i18n]
 available-locales = ["en", "zh-CN", "zh-HK"]

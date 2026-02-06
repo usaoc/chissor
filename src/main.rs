@@ -45,7 +45,7 @@ struct App {
     separator: String,
     use_hmm: bool,
     batch_mode: bool,
-    error_windows: ErrorWindows,
+    error_dialog: Option<ErrorDialog>,
 }
 
 const LOCALES: [Locale; 3] = [Locale::En, Locale::ZhCn, Locale::ZhHk];
@@ -91,15 +91,8 @@ enum Embedded {
     Big,
 }
 
-#[derive(Default)]
-struct ErrorWindows {
-    count: u32,
-    windows: Vec<ErrorWindow>,
-}
-
-struct ErrorWindow {
+struct ErrorDialog {
     id: egui::Id,
-    open: bool,
     what: String,
     content: String,
 }
@@ -130,7 +123,11 @@ impl Default for Dicts {
 
 impl eframe::App for App {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        self.error_windows.show_all(ctx);
+        if let Some(dialog) = &mut self.error_dialog
+            && dialog.show(ctx).backdrop_response.clicked()
+        {
+            self.close_error();
+        }
         egui::TopBottomPanel::top("menu area").show(ctx, |ui| {
             self.show_menu_area(ui);
         });
@@ -375,7 +372,7 @@ impl App {
             self.dicts.new_dict(name, &mut io::BufReader::new(file))?;
             Ok(())
         }) {
-            self.error_windows.add("new-dict.what", err);
+            self.open_error("new-dict.what", err);
         }
     }
 
@@ -385,7 +382,7 @@ impl App {
             self.dicts.load_dict(&mut io::BufReader::new(file))?;
             Ok(())
         }) {
-            self.error_windows.add("load-dict.what", err);
+            self.open_error("load-dict.what", err);
         }
     }
 
@@ -399,7 +396,7 @@ impl App {
             "must not trigger this action for empty word",
         );
         if let Err(err) = self.dicts.add_word(&self.word, &self.freq, &self.tag) {
-            self.error_windows.add("add-word.what", err);
+            self.open_error("add-word.what", err);
         }
     }
 
@@ -408,7 +405,7 @@ impl App {
             self.input = String::from(fs::read_to_string(path)?.trim());
             Ok(())
         }) {
-            self.error_windows.add("import.what", err);
+            self.open_error("import.what", err);
         }
     }
 
@@ -418,7 +415,7 @@ impl App {
             writeln!(&mut buf, "{output}", output = self.output)?;
             Ok(())
         }) {
-            self.error_windows.add("export.what", err);
+            self.open_error("export.what", err);
         }
     }
 
@@ -440,25 +437,25 @@ impl App {
 
     fn segment_batch(&mut self) {
         if let Err(err) = with_out_files(|input| self.segment_one(input)) {
-            self.error_windows.add("segment.what", err);
+            self.open_error("segment.what", err);
         }
     }
 
     fn segment_granular_batch(&mut self) {
         if let Err(err) = with_out_files(|input| self.segment_granular_one(input)) {
-            self.error_windows.add("segment-granular.what", err);
+            self.open_error("segment-granular.what", err);
         }
     }
 
     fn search_batch(&mut self) {
         if let Err(err) = with_out_files(|input| self.search_one(input)) {
-            self.error_windows.add("search.what", err);
+            self.open_error("search.what", err);
         }
     }
 
     fn tag_batch(&mut self) {
         if let Err(err) = with_out_files(|input| self.tag_one(input)) {
-            self.error_windows.add("tag.what", err);
+            self.open_error("tag.what", err);
         }
     }
 
@@ -495,11 +492,25 @@ impl App {
 
     fn get_separator(&self) -> &str {
         let sep = &self.separator;
-        if sep.is_empty() {
-            "\n"
-        } else {
-            sep
-        }
+        if sep.is_empty() { "\n" } else { sep }
+    }
+
+    #[allow(clippy::needless_pass_by_value)]
+    fn open_error(&mut self, what: &str, err: Box<dyn error::Error>) {
+        assert!(
+            self.error_dialog.is_none(),
+            "must not have multiple error dialogs",
+        );
+        self.error_dialog = Some(ErrorDialog {
+            id: egui::Id::new("error_dialog"),
+            what: String::from(what),
+            content: err.to_string(),
+        });
+    }
+
+    fn close_error(&mut self) {
+        assert!(self.error_dialog.is_some(), "must have error dialog");
+        self.error_dialog = None;
     }
 }
 
@@ -624,40 +635,12 @@ impl Embedded {
     }
 }
 
-impl ErrorWindows {
-    #[allow(clippy::needless_pass_by_value)]
-    fn add(&mut self, what: &str, err: Box<dyn error::Error>) {
-        self.windows.push(ErrorWindow {
-            id: egui::Id::new(self.count),
-            open: true,
-            what: String::from(what),
-            content: err.to_string(),
-        });
-        self.count += 1;
-    }
-
-    fn cleanup(&mut self) {
-        self.windows.retain(|ErrorWindow { open, .. }| *open);
-    }
-
-    fn show_all(&mut self, ctx: &egui::Context) {
-        self.cleanup();
-        for win in &mut self.windows {
-            win.show(ctx);
-        }
-    }
-}
-
-impl ErrorWindow {
-    fn show(&mut self, ctx: &egui::Context) {
-        egui::Window::new(t!("error-window.title", what = t!(&self.what)))
-            .id(egui::Id::new(self.id))
-            .resizable(false)
-            .collapsible(false)
-            .open(&mut self.open)
-            .show(ctx, |ui| {
-                ui.label(&self.content);
-            });
+impl ErrorDialog {
+    fn show(&mut self, ctx: &egui::Context) -> egui::ModalResponse<()> {
+        egui::Modal::new(self.id).show(ctx, |ui| {
+            ui.heading(t!("error-dialog.heading", what = t!(&self.what)));
+            ui.label(&self.content);
+        })
     }
 }
 
@@ -802,18 +785,5 @@ mod tests {
             check_invariant(&dicts);
         }
         assert!(!dicts.can_remove_dict());
-    }
-
-    #[test]
-    fn error_windows() {
-        let mut error_windows = ErrorWindows::default();
-        error_windows.add("example", Box::from("one"));
-        error_windows.add("example", Box::from("two"));
-        error_windows.add("example", Box::from("three"));
-        for win in &mut error_windows.windows {
-            win.open = false;
-        }
-        error_windows.cleanup();
-        assert!(error_windows.windows.is_empty());
     }
 }

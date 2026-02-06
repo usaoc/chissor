@@ -103,8 +103,8 @@ hover = """
 [output]
 text = "輸出結果"
 
-[error-window]
-title = "錯誤（%{what}）"
+[error-dialog]
+heading = "錯誤（%{what}）"
 
 [dict]
 name = "默認"

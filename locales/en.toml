@@ -103,8 +103,8 @@ Output results are saved under a selected folder"""
 [output]
 text = "Output result"
 
-[error-window]
-title = "Error (%{what})"
+[error-dialog]
+heading = "Error (%{what})"
 
 [dict]
 name = "Default"

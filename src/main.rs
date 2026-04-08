@@ -122,23 +122,23 @@ impl Default for Dicts {
 }
 
 impl eframe::App for App {
-    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+    fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         if let Some(dialog) = &mut self.error_dialog
-            && dialog.show(ctx).backdrop_response.clicked()
+            && dialog.show(ui).backdrop_response.clicked()
         {
             self.close_error();
         }
-        egui::TopBottomPanel::top("menu area").show(ctx, |ui| {
+        egui::Panel::top("menu area").show_inside(ui, |ui| {
             self.show_menu_area(ui);
         });
-        egui::CentralPanel::default().show(ctx, |ui| {
-            egui::SidePanel::left("dict panel")
+        egui::CentralPanel::default().show_inside(ui, |ui| {
+            egui::Panel::left("dict panel")
                 .resizable(false)
                 .show_inside(ui, |ui| {
                     self.show_dict_panel(ui);
                 });
-            egui::TopBottomPanel::top("input area")
-                .exact_height(ui.available_height() / 2.0)
+            egui::Panel::top("input area")
+                .exact_size(ui.available_height() / 2.0)
                 .show_inside(ui, |ui| {
                     self.show_input_area(ui);
                 });
@@ -184,7 +184,7 @@ impl App {
             .response
             .on_hover_text(t!("menu.lang.hover"));
             ui.menu_button(t!("menu.theme.text"), |ui| {
-                let mut current_preference = ui.ctx().options(|opt| opt.theme_preference);
+                let mut current_preference = ui.options(|opt| opt.theme_preference);
                 for theme in THEMES {
                     let preference = theme.into();
                     let text = theme.to_name();
@@ -192,7 +192,7 @@ impl App {
                         .selectable_value(&mut current_preference, preference, text)
                         .clicked()
                     {
-                        ui.ctx().set_theme(preference);
+                        ui.set_theme(preference);
                         break;
                     }
                 }
@@ -636,8 +636,8 @@ impl Embedded {
 }
 
 impl ErrorDialog {
-    fn show(&mut self, ctx: &egui::Context) -> egui::ModalResponse<()> {
-        egui::Modal::new(self.id).show(ctx, |ui| {
+    fn show(&mut self, ui: &mut egui::Ui) -> egui::ModalResponse<()> {
+        egui::Modal::new(self.id).show(ui, |ui| {
             ui.heading(t!("error-dialog.heading", what = t!(&self.what)));
             ui.label(&self.content);
         })

@@ -150,7 +150,7 @@ impl eframe::App for App {
 }
 
 const PROGRAM_NAME: &str = "Chissor";
-const PROGRAM_VERSION: &str = "v0.2.0";
+const PROGRAM_VERSION: &str = "v0.3.0";
 const COPYRIGHT_NOTICE: &str = "© 2024 Wing Hei Chan";
 const EXPAT_LINK: &str = "https://spdx.org/licenses/MIT.html";
 const GHREPO_LINK: &str = "https://github.com/usaoc/chissor";

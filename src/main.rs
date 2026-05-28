@@ -463,6 +463,9 @@ impl App {
         self.dicts
             .selected()
             .cut(input, self.use_hmm)
+            .into_iter()
+            .map(|jieba::Token { word, .. }| word)
+            .collect::<Vec<_>>()
             .join(self.get_separator())
     }
 
@@ -470,6 +473,9 @@ impl App {
         self.dicts
             .selected()
             .cut_for_search(input, self.use_hmm)
+            .into_iter()
+            .map(|jieba::Token { word, .. }| word)
+            .collect::<Vec<_>>()
             .join(self.get_separator())
     }
 
@@ -477,6 +483,9 @@ impl App {
         self.dicts
             .selected()
             .cut_all(input)
+            .into_iter()
+            .map(|jieba::Token { word, .. }| word)
+            .collect::<Vec<_>>()
             .join(self.get_separator())
     }
 
@@ -485,7 +494,7 @@ impl App {
             .selected()
             .tag(input, self.use_hmm)
             .into_iter()
-            .map(|jieba::Tag { word, tag }| format!("{word} {tag}"))
+            .map(|jieba::Tag { word, tag, .. }| format!("{word} {tag}"))
             .collect::<Vec<_>>()
             .join(self.get_separator())
     }

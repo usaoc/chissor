@@ -128,21 +128,21 @@ impl eframe::App for App {
         {
             self.close_error();
         }
-        egui::Panel::top("menu area").show_inside(ui, |ui| {
+        egui::Panel::top("menu area").show(ui, |ui| {
             self.show_menu_area(ui);
         });
-        egui::CentralPanel::default().show_inside(ui, |ui| {
+        egui::CentralPanel::default().show(ui, |ui| {
             egui::Panel::left("dict panel")
                 .resizable(false)
-                .show_inside(ui, |ui| {
+                .show(ui, |ui| {
                     self.show_dict_panel(ui);
                 });
             egui::Panel::top("input area")
                 .exact_size(ui.available_height() / 2.0)
-                .show_inside(ui, |ui| {
+                .show(ui, |ui| {
                     self.show_input_area(ui);
                 });
-            egui::CentralPanel::default().show_inside(ui, |ui| {
+            egui::CentralPanel::default().show(ui, |ui| {
                 self.show_output_area(ui);
             });
         });

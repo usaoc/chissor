@@ -20,7 +20,7 @@ eframe = { version = "0.35", default-features = false, features = [
   "x11",
 ] }
 rfd = "0.17"
-rust-i18n = "4.1"
+rust-i18n = "4.2"
 jieba-rs = { version = "0.10", default-features = false }
 
 [package.metadata.i18n]

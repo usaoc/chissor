@@ -21,7 +21,7 @@ eframe = { version = "0.36", default-features = false, features = [
 ] }
 rfd = "0.17"
 rust-i18n = "4.2"
-jieba-rs = { version = "0.10", default-features = false }
+jieba-rs = { version = "0.11", default-features = false }
 
 [package.metadata.i18n]
 available-locales = ["en", "zh-CN", "zh-HK"]

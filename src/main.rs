@@ -511,7 +511,7 @@ impl App {
             "must not have multiple error dialogs",
         );
         self.error_dialog = Some(ErrorDialog {
-            id: egui::Id::new("error_dialog"),
+            id: egui::Id::unique("error_dialog"),
             what: String::from(what),
             content: err.to_string(),
         });
